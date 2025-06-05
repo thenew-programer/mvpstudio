@@ -56,11 +56,12 @@ export default function LoginPage() {
       });
 
       if (error) {
-        if (error.message === 'Email not confirmed') {
+        if (error.code === 'email_not_confirmed') {
           toast.error(
             'Please confirm your email address before logging in. Check your inbox for a confirmation link.',
             { duration: 5000 }
           );
+          setIsLoading(false);
           return;
         }
         throw error;
@@ -68,7 +69,7 @@ export default function LoginPage() {
       
       toast.success('Logged in successfully!');
       router.push('/dashboard');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Login error:', error);
       toast.error('Invalid email or password. Please try again.');
     } finally {
