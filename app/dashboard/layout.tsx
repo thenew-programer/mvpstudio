@@ -45,7 +45,7 @@ export default function DashboardLayout({
           <div className="flex items-center gap-2">
             <Link href="/dashboard" className="flex items-center gap-2">
               <Rocket className="h-6 w-6 text-primary" />
-              <span className="font-bold text-xl">MVPForge</span>
+              <span className="font-bold text-xl">MVPStudio</span>
             </Link>
           </div>
           

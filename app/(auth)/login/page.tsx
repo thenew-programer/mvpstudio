@@ -81,7 +81,7 @@ export default function LoginPage() {
         <div className="mb-6 flex flex-col items-center text-center">
           <div className="flex items-center gap-2">
             <Rocket className="h-6 w-6 text-primary" />
-            <span className="font-bold text-xl">MVPForge</span>
+            <span className="font-bold text-xl">MVPStudio</span>
           </div>
           <h1 className="mt-4 text-2xl font-bold">Welcome back</h1>
           <p className="mt-2 text-sm text-muted-foreground">

@@ -7,7 +7,7 @@ import { Toaster } from '@/components/ui/sonner';
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
 export const metadata: Metadata = {
-  title: 'MVPForge | Transform Your Ideas into MVPs',
+  title: 'MVPStudio | Transform Your Ideas into MVPs',
   description: 'Turn your startup ideas into MVPs with AI-powered development assistance',
 };
 

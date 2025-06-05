@@ -9,7 +9,7 @@ export function Footer() {
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
               <Rocket className="h-6 w-6 text-primary" />
-              <span className="font-bold text-xl">MVPForge</span>
+              <span className="font-bold text-xl">MVPStudio</span>
             </div>
             <p className="text-sm text-muted-foreground">
               Transforming ideas into MVPs with AI-powered development.
@@ -67,7 +67,7 @@ export function Footer() {
 
         <div className="border-t mt-12 pt-6 flex flex-col md:flex-row justify-between items-center">
           <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} MVPForge. All rights reserved.
+            © {new Date().getFullYear()} MVPStudio. All rights reserved.
           </p>
           <div className="flex space-x-4 mt-4 md:mt-0">
             {['Twitter', 'LinkedIn', 'GitHub'].map((social) => (
