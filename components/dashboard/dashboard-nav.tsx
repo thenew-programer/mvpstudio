@@ -7,11 +7,8 @@ import { Button } from '@/components/ui/button';
 import {
   LayoutDashboard,
   FileText,
-  MessageSquare,
   CreditCard,
   Settings,
-  Gauge,
-  CalendarDays,
 } from 'lucide-react';
 
 const navItems = [
@@ -21,29 +18,14 @@ const navItems = [
     icon: LayoutDashboard,
   },
   {
-    title: 'Proposal',
-    href: '/dashboard/proposal',
+    title: 'My Proposals',
+    href: '/dashboard/proposals',
     icon: FileText,
   },
   {
-    title: 'Timeline',
-    href: '/dashboard/timeline',
-    icon: CalendarDays,
-  },
-  {
-    title: 'Messages',
-    href: '/dashboard/messages',
-    icon: MessageSquare,
-  },
-  {
-    title: 'Billing',
-    href: '/dashboard/billing',
+    title: 'Payments',
+    href: '/dashboard/payments',
     icon: CreditCard,
-  },
-  {
-    title: 'Progress',
-    href: '/dashboard/progress',
-    icon: Gauge,
   },
   {
     title: 'Settings',

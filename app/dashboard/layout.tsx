@@ -1,15 +1,43 @@
-import { ReactNode } from 'react';
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
 import { DashboardNav } from '@/components/dashboard/dashboard-nav';
 import { UserNav } from '@/components/dashboard/user-nav';
 import { ModeToggle } from '@/components/theme-toggle';
-import { Rocket } from 'lucide-react';
+import { Rocket, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
-interface DashboardLayoutProps {
-  children: ReactNode;
-}
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
 
-export default function DashboardLayout({ children }: DashboardLayoutProps) {
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        router.push('/login');
+        return;
+      }
+      setIsLoading(false);
+    };
+
+    checkAuth();
+  }, [router]);
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-40 border-b bg-background">
