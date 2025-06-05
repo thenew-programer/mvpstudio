@@ -28,6 +28,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
+import { SocialAuthButtons } from '@/components/auth/social-auth-buttons';
 
 const formSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -59,13 +60,14 @@ export default function SignupPage() {
           data: {
             full_name: values.name,
           },
+          emailRedirectTo: `${window.location.origin}/auth/confirm`,
         },
       });
 
       if (error) throw error;
       
-      toast.success('Account created successfully!');
-      router.push('/onboarding');
+      toast.success('Please check your email to confirm your account.');
+      router.push('/auth/verify-email');
     } catch (error) {
       console.error('Signup error:', error);
       toast.error('There was a problem creating your account. Please try again.');
@@ -98,6 +100,19 @@ export default function SignupPage() {
         
         <Card>
           <CardContent className="pt-6">
+            <div className="mb-6">
+              <SocialAuthButtons />
+            </div>
+
+            <div className="relative mb-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t"></div>
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+              </div>
+            </div>
+
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <FormField

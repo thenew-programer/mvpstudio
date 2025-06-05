@@ -28,6 +28,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
+import { SocialAuthButtons } from '@/components/auth/social-auth-buttons';
 
 const formSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -56,7 +57,7 @@ export default function LoginPage() {
       });
 
       if (error) {
-        if (error.code === 'email_not_confirmed') {
+        if (error.message.includes('Email not confirmed')) {
           toast.error(
             'Please confirm your email address before logging in. Check your inbox for a confirmation link.',
             { duration: 5000 }
@@ -101,6 +102,19 @@ export default function LoginPage() {
         
         <Card>
           <CardContent className="pt-6">
+            <div className="mb-6">
+              <SocialAuthButtons />
+            </div>
+
+            <div className="relative mb-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t"></div>
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+              </div>
+            </div>
+
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <FormField
