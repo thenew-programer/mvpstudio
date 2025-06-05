@@ -44,7 +44,7 @@ export function FAQSection() {
     <section 
       id="faq" 
       ref={ref}
-      className="py-20 md:py-32 bg-muted/30"
+      className="py-20 md:py-32"
     >
       <div className="container">
         <div className="text-center max-w-3xl mx-auto mb-16">
