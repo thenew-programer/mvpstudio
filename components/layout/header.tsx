@@ -43,27 +43,22 @@ export function Header() {
       )}
     >
       <div className="container flex h-16 items-center justify-between">
-        <div className="flex items-center gap-12">
-          <Link href="/" className="flex items-center space-x-2">
-            <Rocket className="h-6 w-6 text-primary" />
-            <span className="font-bold text-xl">MVPStudio</span>
-          </Link>
+        <Link href="/" className="flex items-center space-x-2">
+          <Rocket className="h-6 w-6 text-primary" />
+          <span className="font-bold text-xl">MVPStudio</span>
+        </Link>
           
-          <nav className="hidden md:flex items-center gap-10">
-            {routes.map((route) => (
-              <Link 
-                key={route.path}
-                href={route.path}
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-              >
-                {route.name}
-              </Link>
-            ))}
-          </nav>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <div className="hidden md:flex items-center gap-4">
+        <nav className="hidden md:flex items-center gap-8">
+          {routes.map((route) => (
+            <Link 
+              key={route.path}
+              href={route.path}
+              className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+            >
+              {route.name}
+            </Link>
+          ))}
+          <div className="flex items-center gap-4">
             <Link href="/login">
               <Button variant="ghost" size="sm">Log in</Button>
             </Link>
@@ -71,19 +66,19 @@ export function Header() {
               <Button size="sm">Get Started</Button>
             </Link>
           </div>
+        </nav>
 
-          <button 
-            className="flex md:hidden"
-            onClick={() => setIsOpen(!isOpen)}
-            aria-label="Toggle menu"
-          >
-            {isOpen ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <Menu className="h-6 w-6" />
-            )}
-          </button>
-        </div>
+        <button 
+          className="flex md:hidden"
+          onClick={() => setIsOpen(!isOpen)}
+          aria-label="Toggle menu"
+        >
+          {isOpen ? (
+            <X className="h-6 w-6" />
+          ) : (
+            <Menu className="h-6 w-6" />
+          )}
+        </button>
       </div>
 
       {/* Mobile menu */}
