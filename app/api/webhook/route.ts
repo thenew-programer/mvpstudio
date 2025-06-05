@@ -2,6 +2,7 @@ import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { supabase } from '@/lib/supabase';
+import Stripe from 'stripe';
 
 export async function POST(request: Request) {
   const body = await request.text();
@@ -23,8 +24,17 @@ export async function POST(request: Request) {
   }
 
   if (event.type === 'checkout.session.completed') {
-    const session = event.data.object;
-    const { proposalId } = session.metadata;
+    const session = event.data.object as Stripe.Checkout.Session;
+    
+    // Safely check for metadata and proposalId
+    if (!session.metadata?.proposalId) {
+      return NextResponse.json(
+        { error: 'Missing proposalId in session metadata' },
+        { status: 400 }
+      );
+    }
+
+    const proposalId = session.metadata.proposalId;
 
     // Update proposal status in Supabase
     const { error } = await supabase
