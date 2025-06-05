@@ -14,9 +14,6 @@ export function HeroSection() {
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-background to-background/60 dark:from-background dark:to-background/60 z-10" />
       
-      {/* Background grid pattern */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.05)_1px,transparent_1px)] bg-[size:40px_40px] dark:bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)]" />
-      
       {/* Radial gradient */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[800px] aspect-square rounded-full bg-gradient-to-r from-primary/20 to-secondary/20 blur-[120px] opacity-60" />
 
