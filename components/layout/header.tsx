@@ -40,7 +40,7 @@ export function Header() {
       </div>
       <header 
         className={cn(
-          'w-full bg-background border-b',
+          'w-full bg-background',
           isScrolled && 'bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60'
         )}
       >
@@ -55,14 +55,14 @@ export function Header() {
               <Link 
                 key={route.path}
                 href={route.path}
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+                className="text-sm font-medium text-white transition-colors hover:text-primary"
               >
                 {route.name}
               </Link>
             ))}
             <div className="flex items-center gap-4">
               <Link href="/login">
-                <Button variant="ghost" size="sm">Log in</Button>
+                <Button variant="ghost" size="sm" className="text-white hover:text-white">Log in</Button>
               </Link>
               <Link href="/signup">
                 <Button size="sm">Get Started</Button>
@@ -85,20 +85,20 @@ export function Header() {
 
         {/* Mobile menu */}
         {isOpen && (
-          <div className="md:hidden border-b bg-background">
+          <div className="md:hidden bg-background">
             <div className="container py-4 flex flex-col space-y-4">
               {routes.map((route) => (
                 <Link 
                   key={route.path}
                   href={route.path}
-                  className="text-sm font-medium py-2 text-muted-foreground transition-colors hover:text-primary"
+                  className="text-sm font-medium py-2 text-white transition-colors hover:text-primary"
                 >
                   {route.name}
                 </Link>
               ))}
               <div className="flex flex-col gap-2 pt-2">
                 <Link href="/login">
-                  <Button variant="ghost" className="w-full justify-start">Log in</Button>
+                  <Button variant="ghost" className="w-full justify-start text-white hover:text-white">Log in</Button>
                 </Link>
                 <Link href="/signup">
                   <Button className="w-full justify-start">Get Started</Button>
@@ -110,4 +110,3 @@ export function Header() {
       </header>
     </div>
   );
-}
