@@ -20,6 +20,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Mic, Loader2, StopCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { Proposal } from './proposal';
+import type { ProposalProps } from './proposal';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const formSchema = z.object({
@@ -29,7 +30,7 @@ const formSchema = z.object({
   keyFeatures: z.string().min(20, 'Please list some key features'),
 });
 
-const mockProposal = {
+const mockProposal: ProposalProps['proposal'] = {
   summary: "Based on your input, we recommend building a modern SaaS platform that solves [problem] for [target users]. The MVP will focus on delivering core value through essential features while maintaining scalability for future growth.",
   techStack: {
     frontend: ['React', 'Next.js', 'TailwindCSS', 'TypeScript'],
