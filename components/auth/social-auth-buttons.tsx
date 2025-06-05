@@ -5,11 +5,12 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { Provider } from '@supabase/supabase-js';
 
 export function SocialAuthButtons() {
   const [isLoading, setIsLoading] = useState<string | null>(null);
 
-  const handleSocialLogin = async (provider: 'google' | 'github' | 'microsoft' | 'apple') => {
+  const handleSocialLogin = async (provider: Provider) => {
     try {
       setIsLoading(provider);
       const { error } = await supabase.auth.signInWithOAuth({
@@ -78,44 +79,6 @@ export function SocialAuthButtons() {
           </svg>
         )}
         GitHub
-      </Button>
-
-      <Button
-        variant="outline"
-        onClick={() => handleSocialLogin('microsoft')}
-        disabled={!!isLoading}
-        className="w-full"
-      >
-        {isLoading === 'microsoft' ? (
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-        ) : (
-          <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
-            <path fill="currentColor" d="M11.4 24H0V12.6h11.4V24z" />
-            <path fill="currentColor" d="M24 24H12.6V12.6H24V24z" />
-            <path fill="currentColor" d="M11.4 11.4H0V0h11.4v11.4z" />
-            <path fill="currentColor" d="M24 11.4H12.6V0H24v11.4z" />
-          </svg>
-        )}
-        Microsoft
-      </Button>
-
-      <Button
-        variant="outline"
-        onClick={() => handleSocialLogin('apple')}
-        disabled={!!isLoading}
-        className="w-full"
-      >
-        {isLoading === 'apple' ? (
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-        ) : (
-          <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
-            <path
-              fill="currentColor"
-              d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.53 4.08zM12.03 7.25c-.15-2.23 1.66-4.13 3.74-4.25.32 2.89-2.07 4.37-3.74 4.25z"
-            />
-          </svg>
-        )}
-        Apple
       </Button>
     </div>
   );
