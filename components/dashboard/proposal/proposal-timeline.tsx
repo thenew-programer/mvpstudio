@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
 const timelineData = [
   {
@@ -82,6 +82,17 @@ const ganttData = timelineData.map((item, index) => ({
   status: item.status
 }));
 
+const getBarColor = (status: string) => {
+  switch (status) {
+    case 'Completed':
+      return "hsl(var(--chart-2))";
+    case 'In Progress':
+      return "hsl(var(--chart-1))";
+    default:
+      return "hsl(var(--chart-3))";
+  }
+};
+
 export function ProposalTimeline() {
   return (
     <div className="space-y-6 py-4">
@@ -112,16 +123,11 @@ export function ProposalTimeline() {
                   formatter={(value, name) => [`${value} weeks`, name === 'duration' ? 'Duration' : 'Start']}
                   labelFormatter={(value) => ganttData[value].name}
                 />
-                <Bar 
-                  dataKey="duration" 
-                  stackId="a" 
-                  fill={(entry) => {
-                    if (entry.status === 'Completed') return "hsl(var(--chart-2))";
-                    if (entry.status === 'In Progress') return "hsl(var(--chart-1))";
-                    return "hsl(var(--chart-3))";
-                  }}
-                  name="Duration" 
-                />
+                <Bar dataKey="duration" stackId="a" name="Duration">
+                  {ganttData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={getBarColor(entry.status)} />
+                  ))}
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>
