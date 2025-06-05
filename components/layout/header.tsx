@@ -34,16 +34,14 @@ export function Header() {
   }, [pathname]);
 
   return (
-    <>
+    <div>
       <div className="bg-primary px-4 py-2 text-primary-foreground text-center text-sm">
         🎉 Introducing AI-powered project scoping - Get instant MVP estimates and technical specifications
       </div>
       <header 
         className={cn(
-          'fixed top-0 left-0 right-0 z-50 transition-all duration-200',
-          isScrolled 
-            ? 'bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b' 
-            : 'bg-transparent'
+          'w-full bg-background border-b',
+          isScrolled && 'bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60'
         )}
       >
         <div className="container flex h-16 items-center justify-between">
@@ -110,6 +108,6 @@ export function Header() {
           </div>
         )}
       </header>
-    </>
+    </div>
   );
 }
