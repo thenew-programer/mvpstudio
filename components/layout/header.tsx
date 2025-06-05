@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { ModeToggle } from '@/components/theme-toggle';
 import { cn } from '@/lib/utils';
 import { Rocket, Menu, X } from 'lucide-react';
 
@@ -44,13 +43,13 @@ export function Header() {
       )}
     >
       <div className="container flex h-16 items-center justify-between">
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-12">
           <Link href="/" className="flex items-center space-x-2">
             <Rocket className="h-6 w-6 text-primary" />
             <span className="font-bold text-xl">MVPStudio</span>
           </Link>
           
-          <nav className="hidden md:flex gap-8">
+          <nav className="hidden md:flex items-center gap-10">
             {routes.map((route) => (
               <Link 
                 key={route.path}
