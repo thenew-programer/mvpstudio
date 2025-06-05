@@ -55,7 +55,16 @@ export default function LoginPage() {
         password: values.password,
       });
 
-      if (error) throw error;
+      if (error) {
+        if (error.message === 'Email not confirmed') {
+          toast.error(
+            'Please confirm your email address before logging in. Check your inbox for a confirmation link.',
+            { duration: 5000 }
+          );
+          return;
+        }
+        throw error;
+      }
       
       toast.success('Logged in successfully!');
       router.push('/dashboard');
