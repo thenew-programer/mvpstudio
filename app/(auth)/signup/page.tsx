@@ -27,6 +27,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import { supabase } from '@/lib/supabase';
 
 const formSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -51,12 +52,17 @@ export default function SignupPage() {
     setIsLoading(true);
     
     try {
-      // TODO: Implement Supabase signup
-      // In a real implementation, we would call Supabase auth here
-      console.log('Form values:', values);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const { data, error } = await supabase.auth.signUp({
+        email: values.email,
+        password: values.password,
+        options: {
+          data: {
+            full_name: values.name,
+          },
+        },
+      });
+
+      if (error) throw error;
       
       toast.success('Account created successfully!');
       router.push('/onboarding');

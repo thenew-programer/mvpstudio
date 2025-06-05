@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -15,17 +15,33 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { supabase } from '@/lib/supabase';
 
 export function UserNav() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [user, setUser] = useState<{ email: string; full_name: string } | null>(null);
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        setUser({
+          email: session.user.email!,
+          full_name: session.user.user_metadata.full_name || 'User'
+        });
+      }
+    };
+
+    getUser();
+  }, []);
 
   const handleSignOut = async () => {
     setIsLoading(true);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
       
       toast.success('Signed out successfully');
       router.push('/');
@@ -37,22 +53,26 @@ export function UserNav() {
     }
   };
 
+  if (!user) return null;
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
-            <AvatarImage src="" alt="User avatar" />
-            <AvatarFallback>JS</AvatarFallback>
+            <AvatarImage src="" alt={user.full_name} />
+            <AvatarFallback>
+              {user.full_name.split(' ').map(n => n[0]).join('')}
+            </AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">John Smith</p>
+            <p className="text-sm font-medium leading-none">{user.full_name}</p>
             <p className="text-xs leading-none text-muted-foreground">
-              john@example.com
+              {user.email}
             </p>
           </div>
         </DropdownMenuLabel>

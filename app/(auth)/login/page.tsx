@@ -27,6 +27,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import { supabase } from '@/lib/supabase';
 
 const formSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -49,12 +50,12 @@ export default function LoginPage() {
     setIsLoading(true);
     
     try {
-      // TODO: Implement Supabase login
-      // In a real implementation, we would call Supabase auth here
-      console.log('Form values:', values);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: values.email,
+        password: values.password,
+      });
+
+      if (error) throw error;
       
       toast.success('Logged in successfully!');
       router.push('/dashboard');
