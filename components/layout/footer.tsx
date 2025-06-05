@@ -3,7 +3,7 @@ import { Rocket } from 'lucide-react';
 
 export function Footer() {
   return (
-    <footer className="border-t">
+    <footer>
       <div className="container py-12 md:py-16 flex flex-col items-center text-center">
         <div className="flex items-center space-x-2 mb-8">
           <Rocket className="h-6 w-6 text-primary" />
