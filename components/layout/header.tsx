@@ -44,13 +44,13 @@ export function Header() {
       )}
     >
       <div className="container flex h-16 items-center justify-between">
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-8">
           <Link href="/" className="flex items-center space-x-2">
             <Rocket className="h-6 w-6 text-primary" />
             <span className="font-bold text-xl">MVPStudio</span>
           </Link>
           
-          <nav className="hidden md:flex gap-6">
+          <nav className="hidden md:flex gap-8">
             {routes.map((route) => (
               <Link 
                 key={route.path}
@@ -65,7 +65,6 @@ export function Header() {
 
         <div className="flex items-center gap-4">
           <div className="hidden md:flex items-center gap-4">
-            <ModeToggle />
             <Link href="/login">
               <Button variant="ghost" size="sm">Log in</Button>
             </Link>
@@ -108,9 +107,6 @@ export function Header() {
               <Link href="/signup">
                 <Button className="w-full justify-start">Get Started</Button>
               </Link>
-              <div className="py-2">
-                <ModeToggle />
-              </div>
             </div>
           </div>
         </div>
