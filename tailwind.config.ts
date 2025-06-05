@@ -16,6 +16,45 @@ const config: Config = {
       },
     },
     extend: {
+      typography: {
+        DEFAULT: {
+          css: {
+            maxWidth: 'none',
+            color: 'hsl(var(--foreground))',
+            hr: {
+              borderColor: 'hsl(var(--border))',
+              marginTop: '3em',
+              marginBottom: '3em',
+            },
+            'h1, h2, h3, h4': {
+              color: 'hsl(var(--foreground))',
+            },
+            a: {
+              color: 'hsl(var(--primary))',
+              '&:hover': {
+                color: 'hsl(var(--primary))',
+              },
+            },
+            strong: {
+              color: 'hsl(var(--foreground))',
+            },
+            ul: {
+              li: {
+                '&::marker': {
+                  color: 'hsl(var(--muted-foreground))',
+                },
+              },
+            },
+            ol: {
+              li: {
+                '&::marker': {
+                  color: 'hsl(var(--muted-foreground))',
+                },
+              },
+            },
+          },
+        },
+      },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic':
@@ -92,6 +131,6 @@ const config: Config = {
       },
     },
   },
-  plugins: [require('tailwindcss-animate')],
+  plugins: [require('tailwindcss-animate'), require('@tailwindcss/typography')],
 };
 export default config;
