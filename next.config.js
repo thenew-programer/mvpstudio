@@ -5,6 +5,7 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   images: { unoptimized: true },
+  swcMinify: false, // Disable SWC minification to resolve build error
 };
 
 module.exports = nextConfig;
