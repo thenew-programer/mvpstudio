@@ -22,7 +22,7 @@ const container = {
   }
 };
 
-interface ProposalProps {
+export interface ProposalProps {
   proposal: {
     summary: string;
     techStack: {
