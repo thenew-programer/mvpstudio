@@ -1,11 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { PaymentButton } from '@/components/dashboard/proposal/payment-button';
 import { Loader2, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import { toast } from 'sonner';
 
 interface Proposal {
   id: string;
@@ -18,6 +21,19 @@ interface Proposal {
 export default function ProposalsPage() {
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const success = searchParams.get('success');
+    const canceled = searchParams.get('canceled');
+
+    if (success) {
+      toast.success('Payment successful! Your MVP development will begin shortly.');
+    }
+    if (canceled) {
+      toast.error('Payment canceled. Please try again when you\'re ready.');
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const fetchProposals = async () => {
@@ -46,7 +62,6 @@ export default function ProposalsPage() {
         summary: item.summary,
         cost_estimate: item.cost_estimate,
         created_at: item.created_at,
-        // Get the status from the first project_idea or default to 'pending'
         status: item.project_ideas?.[0]?.status || 'pending'
       }));
 
@@ -101,10 +116,16 @@ export default function ProposalsPage() {
                     <p className="text-sm font-medium">Estimated Cost</p>
                     <p className="text-2xl font-bold">${proposal.cost_estimate.toLocaleString()}</p>
                   </div>
-                  <div>
+                  <div className="flex items-center gap-4">
                     <span className="px-3 py-1 rounded-full text-sm font-medium bg-primary/10 text-primary">
                       {proposal.status}
                     </span>
+                    {proposal.status === 'pending' && (
+                      <PaymentButton
+                        proposalId={proposal.id}
+                        amount={proposal.cost_estimate}
+                      />
+                    )}
                   </div>
                 </div>
               </div>
