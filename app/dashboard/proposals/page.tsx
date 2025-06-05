@@ -40,7 +40,17 @@ export default function ProposalsPage() {
         return;
       }
 
-      setProposals(data || []);
+      // Map the data to match the Proposal interface
+      const formattedProposals: Proposal[] = (data || []).map(item => ({
+        id: item.id,
+        summary: item.summary,
+        cost_estimate: item.cost_estimate,
+        created_at: item.created_at,
+        // Get the status from the first project_idea or default to 'pending'
+        status: item.project_ideas?.[0]?.status || 'pending'
+      }));
+
+      setProposals(formattedProposals);
       setIsLoading(false);
     };
 
