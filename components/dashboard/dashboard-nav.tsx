@@ -9,9 +9,12 @@ import {
   FileText,
   CreditCard,
   Settings,
+  ShieldCheck,
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabase';
 
-const navItems = [
+const baseNavItems = [
   {
     title: 'Dashboard',
     href: '/dashboard',
@@ -34,8 +37,36 @@ const navItems = [
   },
 ];
 
+const adminNavItem = {
+  title: 'Admin',
+  href: '/admin',
+  icon: ShieldCheck,
+};
+
 export function DashboardNav() {
   const pathname = usePathname();
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [navItems, setNavItems] = useState(baseNavItems);
+
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const { data: user } = await supabase
+        .from('admin_users')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
+
+      if (user) {
+        setIsAdmin(true);
+        setNavItems([...baseNavItems, adminNavItem]);
+      }
+    };
+
+    checkAdminStatus();
+  }, []);
 
   return (
     <nav className="flex flex-col gap-2 p-4">
