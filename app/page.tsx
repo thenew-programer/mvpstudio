@@ -9,6 +9,7 @@ import { FAQSection } from '@/components/landing/faq-section';
 import { CTASection } from '@/components/landing/cta-section';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
+import { BackToTop } from '@/components/ui/back-to-top';
 
 export default function Home() {
   return (
@@ -24,6 +25,7 @@ export default function Home() {
         <CTASection />
       </main>
       <Footer />
+      <BackToTop />
     </div>
   );
 }
