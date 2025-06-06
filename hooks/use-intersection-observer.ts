@@ -74,5 +74,10 @@ export function useIntersectionObserver({
     }
   });
 
-  return [setNode, !!entry?.isIntersecting, entry];
+  // Create a wrapper function that matches the expected signature
+  const setNodeRef = (node?: Element | null) => {
+    setNode(node || null);
+  };
+
+  return [setNodeRef, !!entry?.isIntersecting, entry];
 }
