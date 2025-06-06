@@ -40,20 +40,6 @@ export function UserNav() {
     };
 
     getUser();
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
-        setUser({
-          email: session.user.email!,
-          full_name: session.user.user_metadata.full_name || 'User'
-        });
-      } else {
-        setUser(null);
-      }
-    });
-
-    return () => subscription.unsubscribe();
   }, []);
 
   const handleSignOut = async () => {

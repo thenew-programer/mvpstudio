@@ -19,53 +19,12 @@ export default function DashboardLayout({
 
   useEffect(() => {
     const checkAuth = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) {
-          router.push('/login');
-          return;
-        }
-
-        // Check if email is confirmed
-        if (!session.user.email_confirmed_at) {
-          router.push('/auth/verify-email');
-          return;
-        }
-
-        // Check user progress to ensure they should be on dashboard
-        const { data: progress } = await supabase
-          .from('user_progress')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
-
-        // If no progress or incomplete steps, redirect appropriately
-        if (!progress) {
-          router.push('/onboarding');
-          return;
-        }
-
-        if (!progress.onboarding_complete) {
-          router.push('/onboarding');
-          return;
-        }
-
-        if (progress.proposal_status === 'pending') {
-          router.push('/proposal');
-          return;
-        }
-
-        if (progress.proposal_status === 'accepted' && !progress.call_booked) {
-          router.push('/book-call');
-          return;
-        }
-
-        // All checks passed, user can access dashboard
-        setIsLoading(false);
-      } catch (error) {
-        console.error('Error checking auth in dashboard layout:', error);
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
         router.push('/login');
+        return;
       }
+      setIsLoading(false);
     };
 
     checkAuth();
@@ -74,10 +33,7 @@ export default function DashboardLayout({
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
-          <p className="text-muted-foreground">Loading dashboard...</p>
-        </div>
+        <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
   }
