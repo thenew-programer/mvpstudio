@@ -4,34 +4,51 @@ import type { NextRequest } from 'next/server';
 
 const ensureUserRecords = async (supabase: any, userId: string, userMetadata: any) => {
   try {
+    console.log('Ensuring user records exist for:', userId);
+    
     // Check if profile exists
-    const { data: existingProfile } = await supabase
+    const { data: existingProfile, error: profileCheckError } = await supabase
       .from('profiles')
       .select('id')
       .eq('id', userId)
       .single();
 
+    if (profileCheckError && profileCheckError.code !== 'PGRST116') {
+      console.error('Error checking profile:', profileCheckError);
+      return false;
+    }
+
     if (!existingProfile) {
-      // Create profile
-      await supabase
+      console.log('Creating missing profile for user:', userId);
+      const { error: profileError } = await supabase
         .from('profiles')
         .insert({
           id: userId,
           full_name: userMetadata?.full_name || userMetadata?.name || 'User',
           role: 'user'
         });
+
+      if (profileError) {
+        console.error('Error creating profile in middleware:', profileError);
+        return false;
+      }
     }
 
     // Check if user progress exists
-    const { data: existingProgress } = await supabase
+    const { data: existingProgress, error: progressCheckError } = await supabase
       .from('user_progress')
       .select('id')
       .eq('id', userId)
       .single();
 
+    if (progressCheckError && progressCheckError.code !== 'PGRST116') {
+      console.error('Error checking progress:', progressCheckError);
+      return false;
+    }
+
     if (!existingProgress) {
-      // Create user progress record
-      await supabase
+      console.log('Creating missing user progress for user:', userId);
+      const { error: progressError } = await supabase
         .from('user_progress')
         .insert({
           id: userId,
@@ -39,6 +56,11 @@ const ensureUserRecords = async (supabase: any, userId: string, userMetadata: an
           proposal_status: 'pending',
           call_booked: false
         });
+
+      if (progressError) {
+        console.error('Error creating user progress in middleware:', progressError);
+        return false;
+      }
     }
 
     return true;
@@ -65,11 +87,16 @@ export async function middleware(req: NextRequest) {
       await ensureUserRecords(supabase, session.user.id, session.user.user_metadata);
 
       // Check user progress to determine where to redirect
-      const { data: progress } = await supabase
+      const { data: progress, error: progressError } = await supabase
         .from('user_progress')
         .select('*')
         .eq('id', session.user.id)
         .single();
+
+      if (progressError) {
+        console.error('Error fetching progress in middleware:', progressError);
+        return NextResponse.redirect(new URL('/onboarding', req.url));
+      }
 
       let redirectPath = '/dashboard';
 
@@ -107,16 +134,25 @@ export async function middleware(req: NextRequest) {
 
     try {
       // Ensure user records exist
-      await ensureUserRecords(supabase, session.user.id, session.user.user_metadata);
+      const recordsExist = await ensureUserRecords(supabase, session.user.id, session.user.user_metadata);
+      
+      if (!recordsExist) {
+        console.log('Failed to ensure user records exist, redirecting to onboarding');
+        if (currentPath !== '/onboarding') {
+          return NextResponse.redirect(new URL('/onboarding', req.url));
+        }
+        return res;
+      }
 
-      const { data: progress } = await supabase
+      const { data: progress, error: progressError } = await supabase
         .from('user_progress')
         .select('*')
         .eq('id', session.user.id)
         .single();
 
       // If no progress record exists, redirect to onboarding
-      if (!progress) {
+      if (progressError || !progress) {
+        console.log('No progress record found, redirecting to onboarding');
         if (currentPath !== '/onboarding') {
           return NextResponse.redirect(new URL('/onboarding', req.url));
         }

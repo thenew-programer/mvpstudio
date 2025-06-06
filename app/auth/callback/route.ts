@@ -6,15 +6,22 @@ import { NextResponse } from 'next/server';
 
 const createUserRecords = async (supabase: any, userId: string, userMetadata: any) => {
   try {
-    // Check if profile exists
-    const { data: existingProfile } = await supabase
+    console.log('Creating user records for:', userId);
+    
+    // Check if profile exists first
+    const { data: existingProfile, error: profileCheckError } = await supabase
       .from('profiles')
       .select('id')
       .eq('id', userId)
       .single();
 
+    if (profileCheckError && profileCheckError.code !== 'PGRST116') {
+      console.error('Error checking existing profile:', profileCheckError);
+      throw profileCheckError;
+    }
+
     if (!existingProfile) {
-      // Create profile for social auth user
+      console.log('Creating profile for user:', userId);
       const { error: profileError } = await supabase
         .from('profiles')
         .insert({
@@ -27,17 +34,25 @@ const createUserRecords = async (supabase: any, userId: string, userMetadata: an
         console.error('Error creating profile:', profileError);
         throw profileError;
       }
+      console.log('Profile created successfully');
+    } else {
+      console.log('Profile already exists for user:', userId);
     }
 
     // Check if user progress exists
-    const { data: existingProgress } = await supabase
+    const { data: existingProgress, error: progressCheckError } = await supabase
       .from('user_progress')
       .select('id')
       .eq('id', userId)
       .single();
 
+    if (progressCheckError && progressCheckError.code !== 'PGRST116') {
+      console.error('Error checking existing progress:', progressCheckError);
+      throw progressCheckError;
+    }
+
     if (!existingProgress) {
-      // Create user progress record
+      console.log('Creating user progress for user:', userId);
       const { error: progressError } = await supabase
         .from('user_progress')
         .insert({
@@ -51,9 +66,12 @@ const createUserRecords = async (supabase: any, userId: string, userMetadata: an
         console.error('Error creating user progress:', progressError);
         throw progressError;
       }
+      console.log('User progress created successfully');
+    } else {
+      console.log('User progress already exists for user:', userId);
     }
 
-    console.log('Successfully created/verified profile and progress records for user:', userId);
+    console.log('Successfully created/verified all user records for:', userId);
   } catch (error) {
     console.error('Error in createUserRecords:', error);
     throw error;
@@ -64,11 +82,14 @@ export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get('code');
 
+  console.log('Auth callback triggered with code:', !!code);
+
   if (code) {
     const cookieStore = cookies();
     const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
     
     try {
+      console.log('Exchanging code for session...');
       const { data, error } = await supabase.auth.exchangeCodeForSession(code);
       
       if (error) {
@@ -77,12 +98,14 @@ export async function GET(request: Request) {
       }
 
       if (data.user) {
+        console.log('User authenticated successfully:', data.user.id);
+        
         try {
           // For any authenticated user (social auth or email confirmation), ensure records exist
           await createUserRecords(supabase, data.user.id, data.user.user_metadata);
         } catch (recordError) {
           console.error('Error creating user records in callback:', recordError);
-          // Don't fail the auth flow, just log the error
+          // Don't fail the auth flow completely, but log the error
           // The middleware will handle missing records by redirecting to onboarding
         }
       }
@@ -93,5 +116,6 @@ export async function GET(request: Request) {
   }
 
   // Always redirect to dashboard - middleware will handle proper routing based on user progress
+  console.log('Redirecting to dashboard');
   return NextResponse.redirect(`${requestUrl.origin}/dashboard`);
 }
