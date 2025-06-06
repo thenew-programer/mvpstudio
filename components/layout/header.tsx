@@ -94,7 +94,7 @@ export function Header() {
             {!isLoading && (
               isAuthenticated ? (
                 <Link href="/dashboard">
-                  <Button variant="ghost" size="sm" className="text-xs text-primary-foreground hover:text-primary-foreground hover:bg-primary-foreground/10 h-7 px-3">
+                  <Button variant="ghost\" size="sm\" className="text-xs text-primary-foreground hover:text-primary-foreground hover:bg-primary-foreground/10 h-7 px-3">
                     Dashboard
                   </Button>
                 </Link>
