@@ -63,33 +63,58 @@ function ResetPasswordContent() {
   useEffect(() => {
     const verifyResetLink = async () => {
       try {
+        // Check for the new Supabase auth flow parameters
+        const token_hash = searchParams.get('token_hash');
+        const type = searchParams.get('type');
+        
+        // Also check for legacy parameters
         const access_token = searchParams.get('access_token');
         const refresh_token = searchParams.get('refresh_token');
-        const type = searchParams.get('type');
 
-        if (type !== 'recovery' || !access_token || !refresh_token) {
-          setStatus('error');
-          setMessage('Invalid or expired reset link. Please request a new one.');
+        // Handle new auth flow (token_hash)
+        if (token_hash && type === 'recovery') {
+          const { error } = await supabase.auth.verifyOtp({
+            token_hash,
+            type: 'recovery',
+          });
+
+          if (error) {
+            console.error('Error verifying OTP:', error);
+            setStatus('error');
+            setMessage('Invalid or expired reset link. Please request a new one.');
+          } else {
+            setStatus('ready');
+            setMessage('');
+          }
           return;
         }
 
-        // Set the session with the tokens from the URL
-        const { error } = await supabase.auth.setSession({
-          access_token,
-          refresh_token,
-        });
+        // Handle legacy auth flow (access_token/refresh_token)
+        if (type === 'recovery' && access_token && refresh_token) {
+          const { error } = await supabase.auth.setSession({
+            access_token,
+            refresh_token,
+          });
 
-        if (error) {
-          setStatus('error');
-          setMessage('Invalid or expired reset link. Please request a new one.');
-        } else {
-          setStatus('ready');
-          setMessage('');
+          if (error) {
+            console.error('Error setting session:', error);
+            setStatus('error');
+            setMessage('Invalid or expired reset link. Please request a new one.');
+          } else {
+            setStatus('ready');
+            setMessage('');
+          }
+          return;
         }
+
+        // If we get here, the link format is not recognized
+        setStatus('error');
+        setMessage('Invalid reset link format. Please request a new reset link.');
+        
       } catch (error) {
         console.error('Error verifying reset link:', error);
         setStatus('error');
-        setMessage('An error occurred. Please try again.');
+        setMessage('An error occurred while verifying the reset link. Please try again.');
       }
     };
 
@@ -100,11 +125,21 @@ function ResetPasswordContent() {
     setIsLoading(true);
     
     try {
+      // Check if user is authenticated
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        throw new Error('No active session. Please use a fresh reset link.');
+      }
+
       const { error } = await supabase.auth.updateUser({
         password: values.password
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Password update error:', error);
+        throw error;
+      }
       
       setStatus('success');
       setMessage('Password updated successfully! Redirecting to login...');
@@ -119,7 +154,18 @@ function ResetPasswordContent() {
       toast.success('Password updated successfully!');
     } catch (error: any) {
       console.error('Reset password error:', error);
-      toast.error('Failed to update password. Please try again.');
+      
+      let errorMessage = 'Failed to update password. Please try again.';
+      
+      if (error.message?.includes('session')) {
+        errorMessage = 'Your reset link has expired. Please request a new one.';
+        setStatus('error');
+        setMessage(errorMessage);
+      } else if (error.message?.includes('same password')) {
+        errorMessage = 'New password must be different from your current password.';
+      }
+      
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
