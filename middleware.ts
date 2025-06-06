@@ -2,76 +2,24 @@ import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-const ensureUserRecords = async (supabase: any, userId: string, userMetadata: any) => {
+const ensureUserRecords = async (supabase: any, userId: string) => {
   try {
     console.log('Ensuring user records exist for:', userId);
     
-    // Check if profile exists
-    const { data: existingProfile, error: profileCheckError } = await supabase
-      .from('profiles')
-      .select('id')
-      .eq('id', userId)
-      .single();
+    // Use the manual initialization function
+    const { data, error } = await supabase.rpc('initialize_user_records', {
+      user_id: userId
+    });
 
-    if (profileCheckError && profileCheckError.code !== 'PGRST116') {
-      console.error('Error checking profile:', profileCheckError);
+    if (error) {
+      console.error('Error initializing user records in middleware:', error);
       return false;
     }
 
-    if (!existingProfile) {
-      console.log('Creating missing profile for user:', userId);
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert({
-          id: userId,
-          full_name: userMetadata?.full_name || userMetadata?.name || 'User',
-          role: 'user'
-        });
-
-      if (profileError) {
-        console.error('Error creating profile in middleware:', profileError);
-        // Don't fail if it's a duplicate key error
-        if (!profileError.message.includes('duplicate') && !profileError.message.includes('already exists')) {
-          return false;
-        }
-      }
-    }
-
-    // Check if user progress exists
-    const { data: existingProgress, error: progressCheckError } = await supabase
-      .from('user_progress')
-      .select('id')
-      .eq('id', userId)
-      .single();
-
-    if (progressCheckError && progressCheckError.code !== 'PGRST116') {
-      console.error('Error checking progress:', progressCheckError);
-      return false;
-    }
-
-    if (!existingProgress) {
-      console.log('Creating missing user progress for user:', userId);
-      const { error: progressError } = await supabase
-        .from('user_progress')
-        .insert({
-          id: userId,
-          onboarding_complete: false,
-          proposal_status: 'pending',
-          call_booked: false
-        });
-
-      if (progressError) {
-        console.error('Error creating user progress in middleware:', progressError);
-        // Don't fail if it's a duplicate key error
-        if (!progressError.message.includes('duplicate') && !progressError.message.includes('already exists')) {
-          return false;
-        }
-      }
-    }
-
+    console.log('User records ensured in middleware:', data);
     return true;
   } catch (error) {
-    console.error('Error ensuring user records:', error);
+    console.error('Error ensuring user records in middleware:', error);
     return false;
   }
 };
@@ -90,7 +38,7 @@ export async function middleware(req: NextRequest) {
   if (session && (currentPath === '/login' || currentPath === '/signup')) {
     try {
       // Ensure user records exist
-      await ensureUserRecords(supabase, session.user.id, session.user.user_metadata);
+      await ensureUserRecords(supabase, session.user.id);
 
       // Check user progress to determine where to redirect
       const { data: progress, error: progressError } = await supabase
@@ -140,7 +88,7 @@ export async function middleware(req: NextRequest) {
 
     try {
       // Ensure user records exist
-      const recordsExist = await ensureUserRecords(supabase, session.user.id, session.user.user_metadata);
+      const recordsExist = await ensureUserRecords(supabase, session.user.id);
       
       if (!recordsExist) {
         console.log('Failed to ensure user records exist, redirecting to onboarding');

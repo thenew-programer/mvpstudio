@@ -4,85 +4,24 @@ import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
-const createUserRecords = async (supabase: any, userId: string, userMetadata: any) => {
+const ensureUserRecords = async (supabase: any, userId: string) => {
   try {
-    console.log('Creating user records for:', userId);
+    console.log('Ensuring user records exist for:', userId);
     
-    // Check if profile exists first
-    const { data: existingProfile, error: profileCheckError } = await supabase
-      .from('profiles')
-      .select('id')
-      .eq('id', userId)
-      .single();
+    // Use the manual initialization function we created
+    const { data, error } = await supabase.rpc('initialize_user_records', {
+      user_id: userId
+    });
 
-    if (profileCheckError && profileCheckError.code !== 'PGRST116') {
-      console.error('Error checking existing profile:', profileCheckError);
-      // Don't throw here, continue to try creating
+    if (error) {
+      console.error('Error initializing user records:', error);
+      return false;
     }
 
-    if (!existingProfile) {
-      console.log('Creating profile for user:', userId);
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert({
-          id: userId,
-          full_name: userMetadata?.full_name || userMetadata?.name || 'User',
-          role: 'user'
-        });
-
-      if (profileError) {
-        console.error('Error creating profile:', profileError);
-        // Don't throw if it's a duplicate key error
-        if (!profileError.message.includes('duplicate') && !profileError.message.includes('already exists')) {
-          throw profileError;
-        }
-      } else {
-        console.log('Profile created successfully');
-      }
-    } else {
-      console.log('Profile already exists for user:', userId);
-    }
-
-    // Check if user progress exists
-    const { data: existingProgress, error: progressCheckError } = await supabase
-      .from('user_progress')
-      .select('id')
-      .eq('id', userId)
-      .single();
-
-    if (progressCheckError && progressCheckError.code !== 'PGRST116') {
-      console.error('Error checking existing progress:', progressCheckError);
-      // Don't throw here, continue to try creating
-    }
-
-    if (!existingProgress) {
-      console.log('Creating user progress for user:', userId);
-      const { error: progressError } = await supabase
-        .from('user_progress')
-        .insert({
-          id: userId,
-          onboarding_complete: false,
-          proposal_status: 'pending',
-          call_booked: false
-        });
-
-      if (progressError) {
-        console.error('Error creating user progress:', progressError);
-        // Don't throw if it's a duplicate key error
-        if (!progressError.message.includes('duplicate') && !progressError.message.includes('already exists')) {
-          throw progressError;
-        }
-      } else {
-        console.log('User progress created successfully');
-      }
-    } else {
-      console.log('User progress already exists for user:', userId);
-    }
-
-    console.log('Successfully created/verified all user records for:', userId);
+    console.log('User records initialized successfully:', data);
     return true;
   } catch (error) {
-    console.error('Error in createUserRecords:', error);
+    console.error('Error in ensureUserRecords:', error);
     return false;
   }
 };
@@ -109,11 +48,11 @@ export async function GET(request: Request) {
       if (data.user) {
         console.log('User authenticated successfully:', data.user.id);
         
-        // Try to create user records, but don't fail the auth flow if it doesn't work
-        const recordsCreated = await createUserRecords(supabase, data.user.id, data.user.user_metadata);
+        // Try to ensure user records exist
+        const recordsCreated = await ensureUserRecords(supabase, data.user.id);
         
         if (!recordsCreated) {
-          console.warn('Failed to create user records in callback, but continuing auth flow');
+          console.warn('Failed to ensure user records in callback, but continuing auth flow');
         }
       }
     } catch (error) {

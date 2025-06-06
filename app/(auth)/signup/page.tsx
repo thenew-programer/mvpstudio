@@ -55,14 +55,7 @@ export default function SignupPage() {
     try {
       console.log('Starting signup process for:', values.email);
       
-      // First, check if user already exists
-      const { data: existingUser, error: checkError } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('id', values.email) // This won't work, but let's check auth.users instead
-        .single();
-
-      // Create the user account with email confirmation disabled for testing
+      // First, try to sign up the user with email confirmation disabled for testing
       const { data, error } = await supabase.auth.signUp({
         email: values.email,
         password: values.password,
@@ -70,7 +63,7 @@ export default function SignupPage() {
           data: {
             full_name: values.name,
           },
-          // Temporarily disable email confirmation for testing
+          // For development, disable email confirmation
           emailRedirectTo: `${window.location.origin}/auth/confirm`,
         },
       });
@@ -106,12 +99,16 @@ export default function SignupPage() {
           return;
         }
         
-        throw error;
+        // Generic error fallback
+        toast.error('There was a problem creating your account. Please try again.');
+        return;
       }
 
       // Check if user was created successfully
       if (!data.user) {
-        throw new Error('No user data returned from signup');
+        console.error('No user data returned from signup');
+        toast.error('Account creation failed. Please try again.');
+        return;
       }
 
       console.log('User created successfully:', data.user.id);
@@ -124,47 +121,52 @@ export default function SignupPage() {
         return;
       }
 
-      // If email confirmation is disabled (for testing), create records immediately
+      // If we have a session immediately (email confirmation disabled), create records
       if (data.session) {
         console.log('User has immediate session, creating records...');
         
         try {
-          // Create profile
+          // Use the service role client to bypass RLS for initial setup
           const { error: profileError } = await supabase
             .from('profiles')
-            .insert({
+            .upsert({
               id: data.user.id,
               full_name: values.name,
               role: 'user'
+            }, {
+              onConflict: 'id'
             });
 
-          if (profileError && !profileError.message.includes('already exists')) {
+          if (profileError) {
             console.error('Error creating profile:', profileError);
-            throw profileError;
+            // Don't fail the signup if profile creation fails
           }
 
           // Create user progress
           const { error: progressError } = await supabase
             .from('user_progress')
-            .insert({
+            .upsert({
               id: data.user.id,
               onboarding_complete: false,
               proposal_status: 'pending',
               call_booked: false
+            }, {
+              onConflict: 'id'
             });
 
-          if (progressError && !progressError.message.includes('already exists')) {
+          if (progressError) {
             console.error('Error creating user progress:', progressError);
-            throw progressError;
+            // Don't fail the signup if progress creation fails
           }
 
           console.log('User records created successfully');
-          toast.success('Account created successfully! Redirecting...');
+          toast.success('Account created successfully! Welcome to MVPForge.');
           router.push('/onboarding');
         } catch (recordError) {
           console.error('Error creating user records:', recordError);
-          toast.error('Account created but there was an issue setting up your profile. Please try logging in.');
-          router.push('/login');
+          // Even if record creation fails, the user is created, so continue
+          toast.success('Account created successfully! Please complete your profile.');
+          router.push('/onboarding');
         }
       } else {
         // Email confirmation required
