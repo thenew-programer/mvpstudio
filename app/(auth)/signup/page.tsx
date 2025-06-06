@@ -66,8 +66,9 @@ export default function SignupPage() {
 
       if (error) throw error;
 
-      // Create profile
+      // Create profile and user progress records
       if (data.user) {
+        // Create profile
         const { error: profileError } = await supabase
           .from('profiles')
           .insert({
@@ -77,6 +78,21 @@ export default function SignupPage() {
 
         if (profileError) {
           console.error('Error creating profile:', profileError);
+        }
+
+        // Create user progress record explicitly
+        const { error: progressError } = await supabase
+          .from('user_progress')
+          .insert({
+            id: data.user.id,
+            onboarding_complete: false,
+            proposal_status: 'pending',
+            call_booked: false
+          });
+
+        if (progressError) {
+          console.error('Error creating user progress:', progressError);
+          // Don't throw here as the user account was created successfully
         }
       }
       
