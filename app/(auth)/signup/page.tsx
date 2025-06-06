@@ -60,14 +60,27 @@ export default function SignupPage() {
           data: {
             full_name: values.name,
           },
-          emailRedirectTo: `${window.location.origin}/auth/confirm`,
         },
       });
 
       if (error) throw error;
       
-      toast.success('Please check your email to confirm your account.');
-      router.push('/auth/verify-email');
+      // Create profile
+      if (data.user) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert({
+            id: data.user.id,
+            full_name: values.name,
+          });
+
+        if (profileError) {
+          console.error('Error creating profile:', profileError);
+        }
+      }
+      
+      toast.success('Account created successfully! Redirecting to onboarding...');
+      router.push('/onboarding');
     } catch (error) {
       console.error('Signup error:', error);
       toast.error('There was a problem creating your account. Please try again.');
