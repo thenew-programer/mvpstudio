@@ -26,9 +26,15 @@ export function UserNav() {
     const getUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('full_name')
+          .eq('id', session.user.id)
+          .single();
+
         setUser({
           email: session.user.email!,
-          full_name: session.user.user_metadata.full_name || 'User'
+          full_name: profile?.full_name || session.user.user_metadata.full_name || 'User'
         });
       }
     };

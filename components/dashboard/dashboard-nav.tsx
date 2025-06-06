@@ -53,13 +53,13 @@ export function DashboardNav() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
 
-      const { data: user } = await supabase
-        .from('admin_users')
-        .select('*')
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
         .eq('id', session.user.id)
         .single();
 
-      if (user) {
+      if (profile?.role === 'admin') {
         setIsAdmin(true);
         setNavItems([...baseNavItems, adminNavItem]);
       }

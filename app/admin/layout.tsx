@@ -24,9 +24,9 @@ export default function AdminLayout({
           return;
         }
 
-        const { data: user, error } = await supabase
-          .from('admin_users')
-          .select('*')
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('role')
           .eq('id', session.user.id)
           .single();
 
@@ -36,7 +36,7 @@ export default function AdminLayout({
           return;
         }
 
-        if (!user) {
+        if (!profile || profile.role !== 'admin') {
           router.push('/dashboard');
           return;
         }
