@@ -55,7 +55,14 @@ export default function SignupPage() {
     try {
       console.log('Starting signup process for:', values.email);
       
-      // Create the user account
+      // First, check if user already exists
+      const { data: existingUser, error: checkError } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', values.email) // This won't work, but let's check auth.users instead
+        .single();
+
+      // Create the user account with email confirmation disabled for testing
       const { data, error } = await supabase.auth.signUp({
         email: values.email,
         password: values.password,
@@ -63,6 +70,7 @@ export default function SignupPage() {
           data: {
             full_name: values.name,
           },
+          // Temporarily disable email confirmation for testing
           emailRedirectTo: `${window.location.origin}/auth/confirm`,
         },
       });
@@ -71,8 +79,42 @@ export default function SignupPage() {
 
       if (error) {
         console.error('Signup error:', error);
+        
+        // Handle specific error cases
+        if (error.message.includes('already registered') || error.message.includes('already been registered')) {
+          toast.error('An account with this email already exists. Please try logging in instead.');
+          return;
+        }
+        
+        if (error.message.includes('email')) {
+          toast.error('Please enter a valid email address.');
+          return;
+        }
+        
+        if (error.message.includes('password')) {
+          toast.error('Password must be at least 8 characters long.');
+          return;
+        }
+        
+        if (error.message.includes('weak password')) {
+          toast.error('Password is too weak. Please choose a stronger password.');
+          return;
+        }
+        
+        if (error.message.includes('rate limit')) {
+          toast.error('Too many signup attempts. Please wait a moment and try again.');
+          return;
+        }
+        
         throw error;
       }
+
+      // Check if user was created successfully
+      if (!data.user) {
+        throw new Error('No user data returned from signup');
+      }
+
+      console.log('User created successfully:', data.user.id);
 
       // Check if user already exists but email not confirmed
       if (data.user && !data.user.identities?.length) {
@@ -82,16 +124,53 @@ export default function SignupPage() {
         return;
       }
 
-      if (data.user) {
-        console.log('User created successfully:', data.user.id);
+      // If email confirmation is disabled (for testing), create records immediately
+      if (data.session) {
+        console.log('User has immediate session, creating records...');
         
-        // Don't try to create records here - let the auth callback handle it
-        // This prevents conflicts and timing issues
-        
+        try {
+          // Create profile
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .insert({
+              id: data.user.id,
+              full_name: values.name,
+              role: 'user'
+            });
+
+          if (profileError && !profileError.message.includes('already exists')) {
+            console.error('Error creating profile:', profileError);
+            throw profileError;
+          }
+
+          // Create user progress
+          const { error: progressError } = await supabase
+            .from('user_progress')
+            .insert({
+              id: data.user.id,
+              onboarding_complete: false,
+              proposal_status: 'pending',
+              call_booked: false
+            });
+
+          if (progressError && !progressError.message.includes('already exists')) {
+            console.error('Error creating user progress:', progressError);
+            throw progressError;
+          }
+
+          console.log('User records created successfully');
+          toast.success('Account created successfully! Redirecting...');
+          router.push('/onboarding');
+        } catch (recordError) {
+          console.error('Error creating user records:', recordError);
+          toast.error('Account created but there was an issue setting up your profile. Please try logging in.');
+          router.push('/login');
+        }
+      } else {
+        // Email confirmation required
+        console.log('Email confirmation required');
         toast.success('Account created successfully! Please check your email to confirm your account.');
         router.push('/auth/verify-email');
-      } else {
-        throw new Error('No user data returned from signup');
       }
       
     } catch (error: any) {
@@ -109,6 +188,8 @@ export default function SignupPage() {
         errorMessage = 'Password is too weak. Please choose a stronger password.';
       } else if (error.message?.includes('rate limit')) {
         errorMessage = 'Too many signup attempts. Please wait a moment and try again.';
+      } else if (error.message?.includes('duplicate') || error.message?.includes('unique')) {
+        errorMessage = 'An account with this email already exists. Please try logging in instead.';
       }
       
       toast.error(errorMessage);

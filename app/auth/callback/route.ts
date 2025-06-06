@@ -17,7 +17,7 @@ const createUserRecords = async (supabase: any, userId: string, userMetadata: an
 
     if (profileCheckError && profileCheckError.code !== 'PGRST116') {
       console.error('Error checking existing profile:', profileCheckError);
-      throw profileCheckError;
+      // Don't throw here, continue to try creating
     }
 
     if (!existingProfile) {
@@ -32,9 +32,13 @@ const createUserRecords = async (supabase: any, userId: string, userMetadata: an
 
       if (profileError) {
         console.error('Error creating profile:', profileError);
-        throw profileError;
+        // Don't throw if it's a duplicate key error
+        if (!profileError.message.includes('duplicate') && !profileError.message.includes('already exists')) {
+          throw profileError;
+        }
+      } else {
+        console.log('Profile created successfully');
       }
-      console.log('Profile created successfully');
     } else {
       console.log('Profile already exists for user:', userId);
     }
@@ -48,7 +52,7 @@ const createUserRecords = async (supabase: any, userId: string, userMetadata: an
 
     if (progressCheckError && progressCheckError.code !== 'PGRST116') {
       console.error('Error checking existing progress:', progressCheckError);
-      throw progressCheckError;
+      // Don't throw here, continue to try creating
     }
 
     if (!existingProgress) {
@@ -64,17 +68,22 @@ const createUserRecords = async (supabase: any, userId: string, userMetadata: an
 
       if (progressError) {
         console.error('Error creating user progress:', progressError);
-        throw progressError;
+        // Don't throw if it's a duplicate key error
+        if (!progressError.message.includes('duplicate') && !progressError.message.includes('already exists')) {
+          throw progressError;
+        }
+      } else {
+        console.log('User progress created successfully');
       }
-      console.log('User progress created successfully');
     } else {
       console.log('User progress already exists for user:', userId);
     }
 
     console.log('Successfully created/verified all user records for:', userId);
+    return true;
   } catch (error) {
     console.error('Error in createUserRecords:', error);
-    throw error;
+    return false;
   }
 };
 
@@ -100,13 +109,11 @@ export async function GET(request: Request) {
       if (data.user) {
         console.log('User authenticated successfully:', data.user.id);
         
-        try {
-          // For any authenticated user (social auth or email confirmation), ensure records exist
-          await createUserRecords(supabase, data.user.id, data.user.user_metadata);
-        } catch (recordError) {
-          console.error('Error creating user records in callback:', recordError);
-          // Don't fail the auth flow completely, but log the error
-          // The middleware will handle missing records by redirecting to onboarding
+        // Try to create user records, but don't fail the auth flow if it doesn't work
+        const recordsCreated = await createUserRecords(supabase, data.user.id, data.user.user_metadata);
+        
+        if (!recordsCreated) {
+          console.warn('Failed to create user records in callback, but continuing auth flow');
         }
       }
     } catch (error) {

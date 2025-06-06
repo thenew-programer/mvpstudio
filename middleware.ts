@@ -30,7 +30,10 @@ const ensureUserRecords = async (supabase: any, userId: string, userMetadata: an
 
       if (profileError) {
         console.error('Error creating profile in middleware:', profileError);
-        return false;
+        // Don't fail if it's a duplicate key error
+        if (!profileError.message.includes('duplicate') && !profileError.message.includes('already exists')) {
+          return false;
+        }
       }
     }
 
@@ -59,7 +62,10 @@ const ensureUserRecords = async (supabase: any, userId: string, userMetadata: an
 
       if (progressError) {
         console.error('Error creating user progress in middleware:', progressError);
-        return false;
+        // Don't fail if it's a duplicate key error
+        if (!progressError.message.includes('duplicate') && !progressError.message.includes('already exists')) {
+          return false;
+        }
       }
     }
 
@@ -93,7 +99,7 @@ export async function middleware(req: NextRequest) {
         .eq('id', session.user.id)
         .single();
 
-      if (progressError) {
+      if (progressError && progressError.code !== 'PGRST116') {
         console.error('Error fetching progress in middleware:', progressError);
         return NextResponse.redirect(new URL('/onboarding', req.url));
       }
@@ -151,7 +157,15 @@ export async function middleware(req: NextRequest) {
         .single();
 
       // If no progress record exists, redirect to onboarding
-      if (progressError || !progress) {
+      if (progressError && progressError.code !== 'PGRST116') {
+        console.log('Error fetching progress, redirecting to onboarding');
+        if (currentPath !== '/onboarding') {
+          return NextResponse.redirect(new URL('/onboarding', req.url));
+        }
+        return res;
+      }
+
+      if (!progress) {
         console.log('No progress record found, redirecting to onboarding');
         if (currentPath !== '/onboarding') {
           return NextResponse.redirect(new URL('/onboarding', req.url));
