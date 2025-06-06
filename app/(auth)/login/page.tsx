@@ -47,6 +47,42 @@ export default function LoginPage() {
     },
   });
 
+  const getRedirectPath = async (userId: string) => {
+    try {
+      // Check user progress to determine where to redirect
+      const { data: progress } = await supabase
+        .from('user_progress')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      // If no progress record exists, start with onboarding
+      if (!progress) {
+        return '/onboarding';
+      }
+
+      // Check each step in order
+      if (!progress.onboarding_complete) {
+        return '/onboarding';
+      }
+
+      if (progress.proposal_status === 'pending') {
+        return '/proposal';
+      }
+
+      if (progress.proposal_status === 'accepted' && !progress.call_booked) {
+        return '/book-call';
+      }
+
+      // If all steps are complete, go to dashboard
+      return '/dashboard';
+    } catch (error) {
+      console.error('Error checking user progress:', error);
+      // Default to onboarding if we can't determine progress
+      return '/onboarding';
+    }
+  };
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     
@@ -68,8 +104,20 @@ export default function LoginPage() {
         throw error;
       }
       
-      toast.success('Logged in successfully!');
-      router.push('/dashboard');
+      if (data.user) {
+        // Check if email is confirmed
+        if (!data.user.email_confirmed_at) {
+          toast.error('Please confirm your email address before logging in.');
+          router.push('/auth/verify-email');
+          return;
+        }
+
+        // Determine where to redirect based on user progress
+        const redirectPath = await getRedirectPath(data.user.id);
+        
+        toast.success('Logged in successfully!');
+        router.push(redirectPath);
+      }
     } catch (error: any) {
       console.error('Login error:', error);
       toast.error('Invalid email or password. Please try again.');
