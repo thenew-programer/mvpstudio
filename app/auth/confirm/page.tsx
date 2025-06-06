@@ -8,6 +8,17 @@ import { Loader2, CheckCircle, XCircle } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { Suspense } from 'react';
 
+function LoadingCard() {
+  return (
+    <Card className="w-full max-w-md">
+      <CardContent className="flex flex-col items-center justify-center py-8">
+        <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+        <p className="text-center text-muted-foreground">Loading...</p>
+      </CardContent>
+    </Card>
+  );
+}
+
 function ConfirmContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -86,14 +97,7 @@ function ConfirmContent() {
 export default function ConfirmPage() {
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
-      <Suspense fallback={
-        <Card className="w-full max-w-md">
-          <CardContent className="flex flex-col items-center justify-center py-8">
-            <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
-            <p className="text-center text-muted-foreground">Loading...</p>
-          </CardContent>
-        </Card>
-      }>
+      <Suspense fallback={<LoadingCard />}>
         <ConfirmContent />
       </Suspense>
     </div>
