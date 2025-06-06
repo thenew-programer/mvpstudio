@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Rocket, Menu, X } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
 
 const routes = [
   { name: 'Features', path: '/#features' },
@@ -17,6 +18,8 @@ const routes = [
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -32,6 +35,53 @@ export function Header() {
     setIsOpen(false);
   }, [pathname]);
 
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsAuthenticated(!!session);
+      setIsLoading(false);
+    };
+
+    checkAuth();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setIsAuthenticated(!!session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const getAuthenticatedRedirectPath = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return '/dashboard';
+
+      const { data: progress } = await supabase
+        .from('user_progress')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
+
+      if (!progress || !progress.onboarding_complete) {
+        return '/onboarding';
+      }
+
+      if (progress.proposal_status === 'pending') {
+        return '/proposal';
+      }
+
+      if (progress.proposal_status === 'accepted' && !progress.call_booked) {
+        return '/book-call';
+      }
+
+      return '/dashboard';
+    } catch (error) {
+      console.error('Error determining redirect path:', error);
+      return '/dashboard';
+    }
+  };
+
   return (
     <div>
       {/* Top Banner - Blue and Smaller */}
@@ -41,11 +91,21 @@ export function Header() {
             <span>hello@mvpstudio.com</span>
           </div>
           <div className="flex items-center">
-            <Link href="/login">
-              <Button variant="ghost" size="sm" className="text-xs text-primary-foreground hover:text-primary-foreground hover:bg-primary-foreground/10 h-7 px-3">
-                Log in
-              </Button>
-            </Link>
+            {!isLoading && (
+              isAuthenticated ? (
+                <Link href="/dashboard">
+                  <Button variant="ghost" size="sm" className="text-xs text-primary-foreground hover:text-primary-foreground hover:bg-primary-foreground/10 h-7 px-3">
+                    Dashboard
+                  </Button>
+                </Link>
+              ) : (
+                <Link href="/login">
+                  <Button variant="ghost" size="sm" className="text-xs text-primary-foreground hover:text-primary-foreground hover:bg-primary-foreground/10 h-7 px-3">
+                    Log in
+                  </Button>
+                </Link>
+              )
+            )}
           </div>
         </div>
       </div>
@@ -81,9 +141,17 @@ export function Header() {
 
           {/* Right Side - Get Started Button */}
           <div className="hidden md:flex items-center">
-            <Link href="/signup">
-              <Button size="sm">Get Started</Button>
-            </Link>
+            {!isLoading && (
+              isAuthenticated ? (
+                <Link href="/dashboard">
+                  <Button size="sm">Go to Dashboard</Button>
+                </Link>
+              ) : (
+                <Link href="/signup">
+                  <Button size="sm">Get Started</Button>
+                </Link>
+              )
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -114,9 +182,17 @@ export function Header() {
                 </Link>
               ))}
               <div className="flex flex-col gap-2 pt-2">
-                <Link href="/signup">
-                  <Button className="w-full justify-start">Get Started</Button>
-                </Link>
+                {!isLoading && (
+                  isAuthenticated ? (
+                    <Link href="/dashboard">
+                      <Button className="w-full justify-start">Go to Dashboard</Button>
+                    </Link>
+                  ) : (
+                    <Link href="/signup">
+                      <Button className="w-full justify-start">Get Started</Button>
+                    </Link>
+                  )
+                )}
               </div>
             </div>
           </div>
