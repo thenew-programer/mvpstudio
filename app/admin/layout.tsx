@@ -16,25 +16,37 @@ export default function AdminLayout({
 
   useEffect(() => {
     const checkAdminAccess = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        router.push('/login');
-        return;
-      }
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session) {
+          router.push('/login');
+          return;
+        }
 
-      const { data: user } = await supabase
-        .from('admin_users')
-        .select('*')
-        .eq('id', session.user.id)
-        .single();
+        const { data: user, error } = await supabase
+          .from('admin_users')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
 
-      if (!user) {
+        if (error) {
+          console.error('Error checking admin status:', error);
+          router.push('/dashboard');
+          return;
+        }
+
+        if (!user) {
+          router.push('/dashboard');
+          return;
+        }
+
+        setIsAdmin(true);
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Error in admin check:', error);
         router.push('/dashboard');
-        return;
       }
-
-      setIsAdmin(true);
-      setIsLoading(false);
     };
 
     checkAdminAccess();
