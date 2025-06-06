@@ -35,15 +35,15 @@ export function Header() {
 
   return (
     <div>
-      {/* Top Banner */}
-      <div className="bg-muted/50 border-b px-4 py-2">
+      {/* Top Banner - Blue and Smaller */}
+      <div className="bg-primary px-4 py-1.5">
         <div className="container flex items-center justify-between">
-          <div className="flex items-center text-sm text-muted-foreground">
+          <div className="flex items-center text-xs text-primary-foreground">
             <span>hello@mvpstudio.com</span>
           </div>
           <div className="flex items-center">
             <Link href="/login">
-              <Button variant="ghost" size="sm" className="text-sm">
+              <Button variant="ghost" size="sm" className="text-xs text-primary-foreground hover:text-primary-foreground hover:bg-primary-foreground/10 h-7 px-3">
                 Log in
               </Button>
             </Link>
