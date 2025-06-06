@@ -10,8 +10,10 @@ export async function middleware(req: NextRequest) {
     data: { session },
   } = await supabase.auth.getSession();
 
+  const currentPath = req.nextUrl.pathname;
+
   // Auth routes - redirect to appropriate page if already logged in
-  if (session && (req.nextUrl.pathname === '/login' || req.nextUrl.pathname === '/signup')) {
+  if (session && (currentPath === '/login' || currentPath === '/signup')) {
     // Check user progress to determine where to redirect
     try {
       const { data: progress } = await supabase
@@ -41,7 +43,7 @@ export async function middleware(req: NextRequest) {
 
   // Protected routes - redirect to login if not authenticated
   const protectedRoutes = ['/dashboard', '/onboarding', '/proposal', '/book-call'];
-  const isProtectedRoute = protectedRoutes.some(route => req.nextUrl.pathname.startsWith(route));
+  const isProtectedRoute = protectedRoutes.some(route => currentPath.startsWith(route));
 
   if (isProtectedRoute && !session) {
     return NextResponse.redirect(new URL('/login', req.url));
@@ -60,8 +62,6 @@ export async function middleware(req: NextRequest) {
         .select('*')
         .eq('id', session.user.id)
         .single();
-
-      const currentPath = req.nextUrl.pathname;
 
       // If no progress record exists, redirect to onboarding
       if (!progress) {
