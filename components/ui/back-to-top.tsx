@@ -1,15 +1,16 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ArrowUp } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export function BackToTop() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     const toggleVisibility = () => {
+      // Show button when page is scrolled down 300px
       if (window.pageYOffset > 300) {
         setIsVisible(true);
       } else {
@@ -18,7 +19,10 @@ export function BackToTop() {
     };
 
     window.addEventListener('scroll', toggleVisibility);
-    return () => window.removeEventListener('scroll', toggleVisibility);
+
+    return () => {
+      window.removeEventListener('scroll', toggleVisibility);
+    };
   }, []);
 
   const scrollToTop = () => {
@@ -29,23 +33,18 @@ export function BackToTop() {
   };
 
   return (
-    <AnimatePresence>
-      {isVisible && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.8, y: 20 }}
-          className="fixed bottom-8 right-8 z-50"
-        >
-          <Button
-            onClick={scrollToTop}
-            size="icon"
-            className="w-12 h-12 rounded-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 shadow-2xl hover:shadow-primary/25 transition-all duration-300 border-0"
-          >
-            <ArrowUp className="h-5 w-5 text-white" />
-          </Button>
-        </motion.div>
+    <Button
+      onClick={scrollToTop}
+      size="icon"
+      className={cn(
+        'fixed bottom-8 right-8 z-50 h-12 w-12 rounded-full shadow-lg transition-all duration-300 hover:shadow-xl',
+        isVisible 
+          ? 'translate-y-0 opacity-100' 
+          : 'translate-y-16 opacity-0 pointer-events-none'
       )}
-    </AnimatePresence>
+      aria-label="Back to top"
+    >
+      <ArrowUp className="h-5 w-5" />
+    </Button>
   );
 }

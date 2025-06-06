@@ -42,7 +42,7 @@ const pricingPlans = [
     popular: true,
     cta: 'Choose Growth',
     icon: Star,
-    gradient: 'from-violet-500 to-purple-600'
+    gradient: 'from-purple-500 to-pink-500'
   },
   {
     name: 'Scale MVP',
@@ -61,7 +61,7 @@ const pricingPlans = [
     popular: false,
     cta: 'Contact Us',
     icon: Crown,
-    gradient: 'from-amber-500 to-orange-600'
+    gradient: 'from-amber-500 to-orange-500'
   }
 ];
 
@@ -81,14 +81,14 @@ export function PricingSection() {
       ref={ref}
       className="py-20 md:py-32 relative overflow-hidden"
     >
-      {/* Cosmic background elements */}
+      {/* Background elements */}
       <motion.div
         style={{ y }}
-        className="absolute top-20 right-20 w-72 h-72 bg-gradient-to-r from-violet-500/10 to-purple-500/10 rounded-full blur-3xl"
+        className="absolute top-20 right-20 w-72 h-72 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-full blur-3xl"
       />
       <motion.div
         style={{ y: useTransform(scrollYProgress, [0, 1], ["-50px", "150px"]) }}
-        className="absolute bottom-20 left-20 w-96 h-96 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 rounded-full blur-3xl"
+        className="absolute bottom-20 left-20 w-96 h-96 bg-gradient-to-r from-secondary/10 to-primary/10 rounded-full blur-3xl"
       />
 
       <div className="container relative">
@@ -101,7 +101,7 @@ export function PricingSection() {
           >
             <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
               Transparent{' '}
-              <span className="text-cosmic">
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                 Pricing
               </span>
             </h2>
@@ -113,7 +113,7 @@ export function PricingSection() {
             data-aos="fade-up"
             data-aos-delay="200"
           >
-            <p className="text-xl text-slate-300 leading-relaxed">
+            <p className="text-xl text-muted-foreground leading-relaxed">
               Choose the perfect plan for your startup's needs with no hidden costs or surprises.
             </p>
           </motion.div>
@@ -159,7 +159,7 @@ export function PricingSection() {
                     }
                   } : {}}
                 >
-                  <div className={`bg-gradient-to-r ${plan.gradient} text-white text-sm font-semibold px-6 py-2 rounded-full shadow-xl flex items-center animate-pulse-glow`}>
+                  <div className={`bg-gradient-to-r ${plan.gradient} text-white text-sm font-semibold px-6 py-2 rounded-full shadow-xl flex items-center`}>
                     <Sparkles className="h-4 w-4 mr-2" />
                     Most Popular
                   </div>
@@ -168,10 +168,10 @@ export function PricingSection() {
               
               <Card className={`w-full relative overflow-hidden group transition-all duration-500 ${
                 plan.popular 
-                  ? 'border-2 border-violet-500/50 shadow-2xl card-cosmic' 
-                  : 'border border-slate-700/50 hover:border-violet-500/30 card-cosmic'
-              }`}>
-                {/* Cosmic gradient overlay */}
+                  ? 'border-2 border-primary shadow-2xl bg-gradient-to-br from-card/80 to-card/40' 
+                  : 'border border-white/10 hover:border-primary/50 bg-gradient-to-br from-card/50 to-card/20'
+              } backdrop-blur-xl`}>
+                {/* Gradient overlay */}
                 <motion.div 
                   className={`absolute inset-0 bg-gradient-to-br ${plan.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}
                   initial={false}
@@ -181,7 +181,7 @@ export function PricingSection() {
                 <CardHeader className="relative pb-8">
                   <div className="flex items-center justify-between mb-6">
                     <motion.div 
-                      className={`bg-gradient-to-br ${plan.gradient} rounded-2xl w-14 h-14 flex items-center justify-center shadow-2xl`}
+                      className={`bg-gradient-to-br ${plan.gradient} rounded-2xl w-14 h-14 flex items-center justify-center shadow-lg`}
                       whileHover={{ 
                         rotate: 360,
                         scale: 1.1,
@@ -192,7 +192,7 @@ export function PricingSection() {
                     </motion.div>
                     {plan.popular && (
                       <motion.div 
-                        className="bg-violet-500/20 text-violet-300 text-xs font-medium px-3 py-1 rounded-full border border-violet-500/30"
+                        className="bg-primary/10 text-primary text-xs font-medium px-3 py-1 rounded-full"
                         animate={{ 
                           scale: [1, 1.05, 1],
                         }}
@@ -206,7 +206,7 @@ export function PricingSection() {
                     )}
                   </div>
                   
-                  <CardTitle className="text-2xl font-bold text-slate-100">{plan.name}</CardTitle>
+                  <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
                   
                   <motion.div 
                     className="mt-4 flex items-baseline"
@@ -214,11 +214,11 @@ export function PricingSection() {
                     animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
                     transition={{ delay: 0.5 + index * 0.1 }}
                   >
-                    <span className="text-4xl font-bold tracking-tight text-white">{plan.price}</span>
-                    {plan.price !== 'Custom' && <span className="text-slate-400 ml-2">/project</span>}
+                    <span className="text-4xl font-bold tracking-tight">{plan.price}</span>
+                    {plan.price !== 'Custom' && <span className="text-muted-foreground ml-2">/project</span>}
                   </motion.div>
                   
-                  <CardDescription className="mt-4 text-base leading-relaxed text-slate-300">
+                  <CardDescription className="mt-4 text-base leading-relaxed">
                     {plan.description}
                   </CardDescription>
                 </CardHeader>
@@ -234,13 +234,13 @@ export function PricingSection() {
                         transition={{ delay: 0.6 + index * 0.1 + featureIndex * 0.05 }}
                       >
                         <motion.div 
-                          className="bg-emerald-500/20 rounded-full p-1 mr-3 mt-1 border border-emerald-500/30"
+                          className="bg-green-100 dark:bg-green-900/30 rounded-full p-1 mr-3 mt-1"
                           whileHover={{ scale: 1.2 }}
                           transition={{ duration: 0.2 }}
                         >
-                          <Check className="h-3 w-3 text-emerald-400" />
+                          <Check className="h-3 w-3 text-green-600 dark:text-green-400" />
                         </motion.div>
-                        <span className="text-sm leading-relaxed text-slate-300">{feature}</span>
+                        <span className="text-sm leading-relaxed">{feature}</span>
                       </motion.li>
                     ))}
                   </ul>
@@ -256,8 +256,8 @@ export function PricingSection() {
                         variant={plan.popular ? "default" : "outline"} 
                         className={`w-full h-12 text-base font-semibold transition-all duration-300 ${
                           plan.popular 
-                            ? `btn-cosmic border-0 text-white shadow-2xl` 
-                            : 'hover:bg-violet-500/10 hover:text-violet-300 border-2 border-slate-600 hover:border-violet-500/50 bg-slate-800/50'
+                            ? `bg-gradient-to-r ${plan.gradient} hover:opacity-90 border-0 text-white shadow-xl` 
+                            : 'hover:bg-primary hover:text-primary-foreground border-2'
                         }`}
                       >
                         {plan.cta}
@@ -266,7 +266,7 @@ export function PricingSection() {
                   </Link>
                 </CardFooter>
 
-                {/* Floating cosmic particles */}
+                {/* Floating particles */}
                 <div className="absolute inset-0 overflow-hidden">
                   {[...Array(4)].map((_, i) => (
                     <motion.div

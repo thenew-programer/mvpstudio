@@ -18,9 +18,9 @@ export function CTASection() {
   const rotate = useTransform(scrollYProgress, [0, 1], [0, 360]);
 
   const floatingIcons = [
-    { icon: Sparkles, delay: 0, x: "10%", y: "20%", gradient: "from-violet-400 to-purple-600" },
-    { icon: Zap, delay: 0.5, x: "85%", y: "30%", gradient: "from-blue-400 to-cyan-600" },
-    { icon: Rocket, delay: 1, x: "15%", y: "70%", gradient: "from-emerald-400 to-teal-600" },
+    { icon: Sparkles, delay: 0, x: "10%", y: "20%" },
+    { icon: Zap, delay: 0.5, x: "85%", y: "30%" },
+    { icon: Rocket, delay: 1, x: "15%", y: "70%" },
   ];
 
   return (
@@ -28,17 +28,17 @@ export function CTASection() {
       ref={ref}
       className="py-20 md:py-32 relative overflow-hidden"
     >
-      {/* Cosmic animated background */}
+      {/* Animated background */}
       <motion.div
         style={{ y }}
-        className="absolute top-20 left-20 w-96 h-96 bg-gradient-to-r from-violet-500/20 to-purple-500/20 rounded-full blur-3xl"
+        className="absolute top-20 left-20 w-96 h-96 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-full blur-3xl"
       />
       <motion.div
         style={{ y: useTransform(scrollYProgress, [0, 1], ["-50px", "200px"]) }}
-        className="absolute bottom-20 right-20 w-80 h-80 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-full blur-3xl"
+        className="absolute bottom-20 right-20 w-80 h-80 bg-gradient-to-r from-secondary/20 to-primary/20 rounded-full blur-3xl"
       />
 
-      {/* Floating cosmic icons */}
+      {/* Floating icons */}
       {floatingIcons.map((item, index) => (
         <motion.div
           key={index}
@@ -51,13 +51,13 @@ export function CTASection() {
             rotate: [0, 360],
           } : {}}
           transition={{
-            duration: 8,
+            duration: 6,
             repeat: Infinity,
             delay: item.delay,
             ease: "easeInOut"
           }}
         >
-          <div className={`bg-gradient-to-br ${item.gradient} rounded-full p-4 shadow-2xl animate-pulse-glow`}>
+          <div className="bg-gradient-to-br from-primary to-secondary rounded-full p-4 shadow-xl">
             <item.icon className="h-6 w-6 text-white" />
           </div>
         </motion.div>
@@ -65,7 +65,7 @@ export function CTASection() {
 
       <div className="container relative">
         <motion.div 
-          className="relative overflow-hidden rounded-3xl card-cosmic text-slate-100"
+          className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/90 via-secondary/90 to-primary/90 text-primary-foreground"
           initial={{ opacity: 0, scale: 0.9, rotateX: -10 }}
           animate={isInView ? { 
             opacity: 1, 
@@ -82,10 +82,10 @@ export function CTASection() {
           }}
           data-aos="zoom-in"
         >
-          {/* Cosmic animated background pattern */}
+          {/* Animated background pattern */}
           <div className="absolute inset-0">
             <motion.div 
-              className="absolute inset-0 bg-[linear-gradient(rgba(139,92,246,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(139,92,246,0.1)_1px,transparent_1px)] bg-[size:40px_40px]"
+              className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:40px_40px]"
               animate={{ 
                 backgroundPosition: ["0px 0px", "40px 40px"],
               }}
@@ -96,8 +96,8 @@ export function CTASection() {
               }}
             />
             
-            {/* Floating cosmic particles */}
-            {[...Array(20)].map((_, i) => (
+            {/* Floating particles */}
+            {[...Array(15)].map((_, i) => (
               <motion.div
                 key={i}
                 className="absolute w-1 h-1 bg-white/30 rounded-full"
@@ -129,18 +129,17 @@ export function CTASection() {
                 className="text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-8"
                 animate={{ 
                   textShadow: [
-                    "0 0 20px rgba(139,92,246,0.5)",
-                    "0 0 40px rgba(139,92,246,0.8)",
-                    "0 0 20px rgba(139,92,246,0.5)"
+                    "0 0 20px rgba(255,255,255,0.5)",
+                    "0 0 40px rgba(255,255,255,0.8)",
+                    "0 0 20px rgba(255,255,255,0.5)"
                   ]
                 }}
                 transition={{ 
-                  duration: 4,
+                  duration: 3,
                   repeat: Infinity
                 }}
               >
-                Ready to Build Your{' '}
-                <span className="text-cosmic">MVP</span>?
+                Ready to Build Your MVP?
               </motion.h2>
             </motion.div>
             
@@ -149,7 +148,7 @@ export function CTASection() {
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
               transition={{ duration: 0.8, delay: 0.5 }}
             >
-              <p className="text-xl md:text-2xl mb-10 text-slate-300 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-xl md:text-2xl mb-10 opacity-90 max-w-3xl mx-auto leading-relaxed">
                 Start your journey from idea to launch today. Let MVPForge help you build the perfect MVP to validate your concept and attract users.
               </p>
             </motion.div>
@@ -166,7 +165,8 @@ export function CTASection() {
                 >
                   <Button 
                     size="lg" 
-                    className="px-10 py-4 text-lg font-semibold bg-white text-slate-900 hover:bg-slate-100 shadow-2xl hover:shadow-white/25 transition-all duration-300 rounded-2xl"
+                    variant="secondary" 
+                    className="px-10 py-4 text-lg font-semibold bg-white text-primary hover:bg-white/90 shadow-2xl hover:shadow-white/25 transition-all duration-300"
                   >
                     Get Started 
                     <motion.div

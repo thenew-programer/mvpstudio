@@ -13,7 +13,7 @@ const testimonials = [
     role: "Founder, PayTrack",
     avatar: "SJ",
     rating: 5,
-    gradient: "from-blue-500 to-cyan-600"
+    gradient: "from-blue-500 to-cyan-500"
   },
   {
     quote: "The level of detail in the project proposal was impressive. MVPForge understood exactly what our healthcare app needed and delivered a beautiful MVP on budget.",
@@ -21,7 +21,7 @@ const testimonials = [
     role: "CEO, MediConnect",
     avatar: "DC",
     rating: 5,
-    gradient: "from-violet-500 to-purple-600"
+    gradient: "from-purple-500 to-pink-500"
   },
   {
     quote: "As a non-technical founder, I was struggling to communicate my vision to developers. MVPForge bridged that gap perfectly and helped me launch faster than I thought possible.",
@@ -29,7 +29,7 @@ const testimonials = [
     role: "Founder, TravelBuddy",
     avatar: "AR",
     rating: 5,
-    gradient: "from-emerald-500 to-teal-600"
+    gradient: "from-green-500 to-emerald-500"
   },
   {
     quote: "What impressed me most was how accurately the AI estimated our timeline and costs. No surprises, just a smooth development process from start to finish.",
@@ -37,7 +37,7 @@ const testimonials = [
     role: "CTO, RetailFlow",
     avatar: "MT",
     rating: 5,
-    gradient: "from-amber-500 to-orange-600"
+    gradient: "from-amber-500 to-orange-500"
   }
 ];
 
@@ -57,14 +57,14 @@ export function TestimonialsSection() {
       ref={ref}
       className="py-20 md:py-32 relative overflow-hidden"
     >
-      {/* Cosmic background elements */}
+      {/* Background elements */}
       <motion.div
         style={{ y }}
-        className="absolute top-10 left-10 w-80 h-80 bg-gradient-to-r from-violet-500/5 to-purple-500/5 rounded-full blur-3xl"
+        className="absolute top-10 left-10 w-80 h-80 bg-gradient-to-r from-primary/5 to-secondary/5 rounded-full blur-3xl"
       />
       <motion.div
         style={{ y: useTransform(scrollYProgress, [0, 1], ["-30px", "100px"]) }}
-        className="absolute bottom-10 right-10 w-96 h-96 bg-gradient-to-r from-blue-500/5 to-cyan-500/5 rounded-full blur-3xl"
+        className="absolute bottom-10 right-10 w-96 h-96 bg-gradient-to-r from-secondary/5 to-primary/5 rounded-full blur-3xl"
       />
 
       <div className="container relative">
@@ -77,7 +77,7 @@ export function TestimonialsSection() {
           >
             <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
               Success{' '}
-              <span className="text-cosmic">
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                 Stories
               </span>
             </h2>
@@ -89,7 +89,7 @@ export function TestimonialsSection() {
             data-aos="fade-up"
             data-aos-delay="200"
           >
-            <p className="text-xl text-slate-300 leading-relaxed">
+            <p className="text-xl text-muted-foreground leading-relaxed">
               Hear from founders who transformed their ideas into successful MVPs with our platform.
             </p>
           </motion.div>
@@ -120,8 +120,8 @@ export function TestimonialsSection() {
               data-aos="flip-left"
               data-aos-delay={index * 150}
             >
-              <Card className="h-full relative overflow-hidden card-cosmic shadow-2xl">
-                {/* Cosmic gradient overlay */}
+              <Card className="h-full relative overflow-hidden bg-gradient-to-br from-card/50 to-card/20 backdrop-blur-xl border border-white/10 shadow-xl hover:shadow-2xl transition-all duration-500">
+                {/* Gradient overlay */}
                 <motion.div 
                   className={`absolute inset-0 bg-gradient-to-br ${testimonial.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}
                   initial={false}
@@ -129,9 +129,9 @@ export function TestimonialsSection() {
                 />
                 
                 <CardContent className="p-8 relative">
-                  {/* Quote icon with cosmic gradient and animation */}
+                  {/* Quote icon with gradient and animation */}
                   <motion.div 
-                    className={`bg-gradient-to-br ${testimonial.gradient} rounded-2xl w-14 h-14 flex items-center justify-center mb-6 shadow-2xl`}
+                    className={`bg-gradient-to-br ${testimonial.gradient} rounded-2xl w-14 h-14 flex items-center justify-center mb-6 shadow-lg`}
                     whileHover={{ 
                       rotate: [0, -10, 10, 0],
                       scale: 1.1,
@@ -140,7 +140,7 @@ export function TestimonialsSection() {
                   >
                     <Quote className="h-7 w-7 text-white" />
                     
-                    {/* Cosmic pulse effect */}
+                    {/* Pulse effect */}
                     <motion.div
                       className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${testimonial.gradient}`}
                       animate={{ 
@@ -179,7 +179,7 @@ export function TestimonialsSection() {
                   </motion.div>
                   
                   <motion.p 
-                    className="mb-8 text-slate-300 leading-relaxed text-lg"
+                    className="mb-8 text-muted-foreground leading-relaxed text-lg"
                     initial={{ opacity: 0 }}
                     animate={isInView ? { opacity: 1 } : { opacity: 0 }}
                     transition={{ delay: 0.7 + index * 0.1 }}
@@ -198,20 +198,20 @@ export function TestimonialsSection() {
                       whileHover={{ scale: 1.1 }}
                       transition={{ duration: 0.3 }}
                     >
-                      <Avatar className="h-14 w-14 border-2 border-slate-800">
-                        <AvatarFallback className="bg-slate-800 text-slate-100 font-semibold text-lg">
+                      <Avatar className="h-14 w-14 border-2 border-background">
+                        <AvatarFallback className="bg-background text-foreground font-semibold text-lg">
                           {testimonial.avatar}
                         </AvatarFallback>
                       </Avatar>
                     </motion.div>
                     <div>
-                      <p className="font-semibold text-lg text-slate-100">{testimonial.author}</p>
-                      <p className="text-slate-400">{testimonial.role}</p>
+                      <p className="font-semibold text-lg">{testimonial.author}</p>
+                      <p className="text-muted-foreground">{testimonial.role}</p>
                     </div>
                   </motion.div>
                 </CardContent>
 
-                {/* Floating cosmic particles */}
+                {/* Floating particles */}
                 <div className="absolute inset-0 overflow-hidden">
                   {[...Array(3)].map((_, i) => (
                     <motion.div
