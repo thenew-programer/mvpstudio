@@ -35,41 +35,59 @@ export function Header() {
 
   return (
     <div>
-      <div className="bg-primary px-4 py-2 text-primary-foreground text-center text-sm">
-        🎉 Introducing AI-powered project scoping - Get instant MVP estimates and technical specifications
+      {/* Top Banner */}
+      <div className="bg-muted/50 border-b px-4 py-2">
+        <div className="container flex items-center justify-between">
+          <div className="flex items-center text-sm text-muted-foreground">
+            <span>hello@mvpstudio.com</span>
+          </div>
+          <div className="flex items-center">
+            <Link href="/login">
+              <Button variant="ghost" size="sm" className="text-sm">
+                Log in
+              </Button>
+            </Link>
+          </div>
+        </div>
       </div>
+
+      {/* Main Header */}
       <header 
         className={cn(
-          'w-full bg-background',
-          isScrolled && 'bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60'
+          'w-full bg-background sticky top-0 z-50',
+          isScrolled && 'bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b'
         )}
       >
         <div className="container flex h-16 items-center justify-between">
+          {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
             <Rocket className="h-6 w-6 text-primary" />
             <span className="font-bold text-xl">MVPStudio</span>
           </Link>
           
-          <nav className="hidden md:flex items-center gap-8">
-            {routes.map((route) => (
-              <Link 
-                key={route.path}
-                href={route.path}
-                className="text-sm font-medium text-white transition-colors hover:text-primary"
-              >
-                {route.name}
-              </Link>
-            ))}
-            <div className="flex items-center gap-4">
-              <Link href="/login">
-                <Button variant="ghost" size="sm" className="text-white hover:text-white">Log in</Button>
-              </Link>
-              <Link href="/signup">
-                <Button size="sm">Get Started</Button>
-              </Link>
+          {/* Centered Navigation */}
+          <nav className="hidden md:flex items-center justify-center flex-1 mx-8">
+            <div className="flex items-center gap-8">
+              {routes.map((route) => (
+                <Link 
+                  key={route.path}
+                  href={route.path}
+                  className="text-sm font-medium transition-colors hover:text-primary"
+                >
+                  {route.name}
+                </Link>
+              ))}
             </div>
           </nav>
 
+          {/* Right Side - Get Started Button */}
+          <div className="hidden md:flex items-center">
+            <Link href="/signup">
+              <Button size="sm">Get Started</Button>
+            </Link>
+          </div>
+
+          {/* Mobile Menu Button */}
           <button 
             className="flex md:hidden"
             onClick={() => setIsOpen(!isOpen)}
@@ -85,21 +103,18 @@ export function Header() {
 
         {/* Mobile menu */}
         {isOpen && (
-          <div className="md:hidden bg-background">
+          <div className="md:hidden bg-background border-t">
             <div className="container py-4 flex flex-col space-y-4">
               {routes.map((route) => (
                 <Link 
                   key={route.path}
                   href={route.path}
-                  className="text-sm font-medium py-2 text-white transition-colors hover:text-primary"
+                  className="text-sm font-medium py-2 transition-colors hover:text-primary"
                 >
                   {route.name}
                 </Link>
               ))}
               <div className="flex flex-col gap-2 pt-2">
-                <Link href="/login">
-                  <Button variant="ghost" className="w-full justify-start text-white hover:text-white">Log in</Button>
-                </Link>
                 <Link href="/signup">
                   <Button className="w-full justify-start">Get Started</Button>
                 </Link>
