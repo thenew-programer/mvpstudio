@@ -235,7 +235,7 @@ export function HeroSection() {
                   }}
                   transition={{ duration: 3, repeat: Infinity }}
                   style={{
-                    background: `linear-gradient(45deg, ${stat.gradient.split(' ')[0].replace('from-', '')}, ${stat.gradient.split(' ')[2].replace('to-', '')})`,
+                    background: `linear-gradient(45deg, ${stat.gradient.split(' ')[0].replace('from-', '')}, ${stat.gradient.split(' ')[1].replace('to-', '')})`,
                     backgroundClip: 'text',
                     WebkitBackgroundClip: 'text',
                     color: 'transparent',
