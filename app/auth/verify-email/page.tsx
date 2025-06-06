@@ -60,7 +60,7 @@ export default function VerifyEmailPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-background to-muted/20">
       <Link 
         href="/" 
         className="absolute top-8 left-8 flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -69,18 +69,23 @@ export default function VerifyEmailPage() {
         Back to home
       </Link>
 
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl">Check your email</CardTitle>
-          <CardDescription>
+      <Card className="w-full max-w-md relative overflow-hidden bg-gradient-to-br from-card/80 to-card border-0 shadow-2xl backdrop-blur-sm">
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5" />
+        
+        <CardHeader className="space-y-1 relative text-center">
+          <CardTitle className="text-2xl font-bold">Check your email</CardTitle>
+          <CardDescription className="text-base">
             We've sent you a verification link to confirm your email address
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex flex-col items-center justify-center py-8">
-          <div className="rounded-full bg-primary/10 p-6 mb-6">
-            <Mail className="h-12 w-12 text-primary" />
+        
+        <CardContent className="flex flex-col items-center justify-center py-8 relative">
+          <div className="bg-gradient-to-br from-primary to-secondary rounded-2xl p-6 mb-6 shadow-lg">
+            <Mail className="h-12 w-12 text-white" />
           </div>
-          <p className="text-center text-muted-foreground mb-6">
+          
+          <p className="text-center text-muted-foreground mb-8 leading-relaxed">
             Click the link in the email to verify your account. If you don't see it, check your spam folder.
           </p>
           
@@ -89,29 +94,29 @@ export default function VerifyEmailPage() {
               onClick={handleResendEmail}
               disabled={!canResend || isResending}
               variant="outline"
-              className="w-full"
+              className="w-full h-12 text-base font-semibold border-2 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300"
             >
               {isResending ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                   Sending...
                 </>
               ) : !canResend ? (
                 <>
-                  <Mail className="mr-2 h-4 w-4" />
+                  <Mail className="mr-2 h-5 w-5" />
                   Resend in {countdown}s
                 </>
               ) : (
                 <>
-                  <Mail className="mr-2 h-4 w-4" />
+                  <Mail className="mr-2 h-5 w-5" />
                   Resend Email
                 </>
               )}
             </Button>
             
             <Link href="/login">
-              <Button variant="ghost" className="w-full">
-                <ArrowLeft className="mr-2 h-4 w-4" />
+              <Button variant="ghost" className="w-full h-12 text-base hover:bg-muted/50">
+                <ArrowLeft className="mr-2 h-5 w-5" />
                 Back to Login
               </Button>
             </Link>

@@ -15,32 +15,38 @@ const features = [
   {
     icon: Sparkles,
     title: 'AI-Powered Idea Processing',
-    description: 'Describe your startup idea via text or voice, and our AI will analyze it to generate a comprehensive project proposal.'
+    description: 'Describe your startup idea via text or voice, and our AI will analyze it to generate a comprehensive project proposal.',
+    gradient: 'from-blue-500 to-cyan-500'
   },
   {
     icon: MessageSquare,
     title: 'Smart Recommendations',
-    description: 'Receive personalized tech stack suggestions and feature recommendations based on your specific business needs.'
+    description: 'Receive personalized tech stack suggestions and feature recommendations based on your specific business needs.',
+    gradient: 'from-purple-500 to-pink-500'
   },
   {
     icon: Clock,
     title: 'Accurate Timeline Estimates',
-    description: 'Get realistic development timelines broken down by milestone to help you plan your launch effectively.'
+    description: 'Get realistic development timelines broken down by milestone to help you plan your launch effectively.',
+    gradient: 'from-green-500 to-emerald-500'
   },
   {
     icon: DollarSign,
     title: 'Transparent Pricing',
-    description: 'View detailed cost breakdowns with no hidden fees, allowing you to budget appropriately for your MVP development.'
+    description: 'View detailed cost breakdowns with no hidden fees, allowing you to budget appropriately for your MVP development.',
+    gradient: 'from-amber-500 to-orange-500'
   },
   {
     icon: Shield,
     title: 'Secure Development Process',
-    description: 'Your ideas and data are protected with enterprise-grade security throughout the entire development journey.'
+    description: 'Your ideas and data are protected with enterprise-grade security throughout the entire development journey.',
+    gradient: 'from-red-500 to-rose-500'
   },
   {
     icon: BarChart,
     title: 'Progress Tracking',
-    description: 'Monitor your project\'s development in real-time with detailed analytics and milestone tracking.'
+    description: 'Monitor your project\'s development in real-time with detailed analytics and milestone tracking.',
+    gradient: 'from-indigo-500 to-purple-500'
   }
 ];
 
@@ -83,13 +89,27 @@ export function FeaturesSection() {
               initial={{ opacity: 0, y: 30 }}
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
               transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
-              className="bg-card border rounded-lg p-6 hover:shadow-md transition-shadow"
+              className="group relative"
             >
-              <div className="bg-primary/10 rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                <feature.icon className="h-6 w-6 text-primary" />
+              <div className="relative overflow-hidden bg-gradient-to-br from-card/50 to-card border rounded-2xl p-8 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 backdrop-blur-sm">
+                {/* Gradient overlay */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300 rounded-2xl`} />
+                
+                {/* Icon with gradient background */}
+                <div className={`relative bg-gradient-to-br ${feature.gradient} rounded-2xl w-14 h-14 flex items-center justify-center mb-6 shadow-lg`}>
+                  <feature.icon className="h-7 w-7 text-white" />
+                </div>
+                
+                <h3 className="text-xl font-semibold mb-3 group-hover:text-primary transition-colors">
+                  {feature.title}
+                </h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  {feature.description}
+                </p>
+                
+                {/* Subtle border glow on hover */}
+                <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-20 transition-opacity duration-300 -z-10 blur-xl`} />
               </div>
-              <h3 className="text-xl font-medium mb-2">{feature.title}</h3>
-              <p className="text-muted-foreground">{feature.description}</p>
             </motion.div>
           ))}
         </div>

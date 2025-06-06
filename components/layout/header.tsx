@@ -8,7 +8,6 @@ import { cn } from '@/lib/utils';
 import { Rocket, Menu, X } from 'lucide-react';
 
 const routes = [
-  { name: 'Home', path: '/' },
   { name: 'Features', path: '/#features' },
   { name: 'How It Works', path: '/#how-it-works' },
   { name: 'Pricing', path: '/#pricing' },

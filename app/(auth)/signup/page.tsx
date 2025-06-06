@@ -77,7 +77,7 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-4">
+    <div className="flex min-h-screen flex-col items-center justify-center p-4 bg-gradient-to-br from-background to-muted/20">
       <Link 
         href="/" 
         className="absolute top-8 left-8 flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -87,19 +87,21 @@ export default function SignupPage() {
       </Link>
       
       <div className="mx-auto w-full max-w-md">
-        <div className="mb-6 flex flex-col items-center text-center">
-          <div className="flex items-center gap-2">
-            <Rocket className="h-6 w-6 text-primary" />
-            <span className="font-bold text-xl">MVPStudio</span>
+        <div className="mb-8 flex flex-col items-center text-center">
+          <div className="bg-gradient-to-br from-primary to-secondary rounded-2xl p-3 mb-4 shadow-lg">
+            <Rocket className="h-8 w-8 text-white" />
           </div>
-          <h1 className="mt-4 text-2xl font-bold">Create your account</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
+          <h1 className="text-3xl font-bold tracking-tight">Create your account</h1>
+          <p className="mt-2 text-muted-foreground">
             Start building your MVP today
           </p>
         </div>
         
-        <Card>
-          <CardContent className="pt-6">
+        <Card className="relative overflow-hidden bg-gradient-to-br from-card/80 to-card border-0 shadow-2xl backdrop-blur-sm">
+          {/* Gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5" />
+          
+          <CardContent className="pt-8 relative">
             <div className="mb-6">
               <SocialAuthButtons />
             </div>
@@ -109,20 +111,24 @@ export default function SignupPage() {
                 <div className="w-full border-t"></div>
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+                <span className="bg-card px-3 text-muted-foreground font-medium">Or continue with</span>
               </div>
             </div>
 
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <FormField
                   control={form.control}
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Full Name</FormLabel>
+                      <FormLabel className="text-base font-medium">Full Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="John Smith" {...field} />
+                        <Input 
+                          placeholder="John Smith" 
+                          className="h-12 text-base border-2 focus:border-primary transition-colors"
+                          {...field} 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -134,9 +140,14 @@ export default function SignupPage() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email Address</FormLabel>
+                      <FormLabel className="text-base font-medium">Email Address</FormLabel>
                       <FormControl>
-                        <Input type="email" placeholder="john@example.com" {...field} />
+                        <Input 
+                          type="email" 
+                          placeholder="john@example.com" 
+                          className="h-12 text-base border-2 focus:border-primary transition-colors"
+                          {...field} 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -148,19 +159,28 @@ export default function SignupPage() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel className="text-base font-medium">Password</FormLabel>
                       <FormControl>
-                        <Input type="password" placeholder="••••••••" {...field} />
+                        <Input 
+                          type="password" 
+                          placeholder="••••••••" 
+                          className="h-12 text-base border-2 focus:border-primary transition-colors"
+                          {...field} 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
                 
-                <Button type="submit" className="w-full" disabled={isLoading}>
+                <Button 
+                  type="submit" 
+                  className="w-full h-12 text-base font-semibold bg-gradient-to-r from-primary to-secondary hover:opacity-90 shadow-lg" 
+                  disabled={isLoading}
+                >
                   {isLoading ? (
                     <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                       Creating account...
                     </>
                   ) : (
@@ -170,20 +190,21 @@ export default function SignupPage() {
               </form>
             </Form>
           </CardContent>
-          <CardFooter className="flex flex-col space-y-4 border-t px-6 py-4">
+          
+          <CardFooter className="flex flex-col space-y-4 border-t bg-muted/20 px-6 py-6 relative">
             <div className="text-center text-sm">
-              By creating an account, you agree to our{' '}
-              <Link href="/terms" className="underline underline-offset-4 hover:text-primary">
+              <span className="text-muted-foreground">By creating an account, you agree to our </span>
+              <Link href="/terms" className="text-primary hover:text-primary/80 font-medium">
                 Terms of Service
-              </Link>{' '}
-              and{' '}
-              <Link href="/privacy" className="underline underline-offset-4 hover:text-primary">
+              </Link>
+              <span className="text-muted-foreground"> and </span>
+              <Link href="/privacy" className="text-primary hover:text-primary/80 font-medium">
                 Privacy Policy
               </Link>
             </div>
-            <div className="text-center text-sm">
-              Already have an account?{' '}
-              <Link href="/login" className="font-medium text-primary hover:underline">
+            <div className="text-center">
+              <span className="text-muted-foreground">Already have an account? </span>
+              <Link href="/login" className="font-semibold text-primary hover:text-primary/80">
                 Log in
               </Link>
             </div>

@@ -7,32 +7,28 @@ const stats = [
     value: '40%',
     description: 'MVP completion',
     icon: Code,
-    iconColor: 'text-blue-500',
-    iconBg: 'bg-blue-500/10',
+    gradient: 'from-blue-500 to-cyan-500',
   },
   {
     title: 'Remaining Time',
     value: '18 days',
     description: 'Until first milestone',
     icon: CalendarDays,
-    iconColor: 'text-purple-500',
-    iconBg: 'bg-purple-500/10',
+    gradient: 'from-purple-500 to-pink-500',
   },
   {
     title: 'Total Hours',
     value: '67',
     description: 'Development hours logged',
     icon: Clock,
-    iconColor: 'text-teal-500',
-    iconBg: 'bg-teal-500/10',
+    gradient: 'from-green-500 to-emerald-500',
   },
   {
     title: 'Budget Used',
     value: '$2,499',
     description: '50% of total budget',
     icon: CreditCard,
-    iconColor: 'text-amber-500',
-    iconBg: 'bg-amber-500/10',
+    gradient: 'from-amber-500 to-orange-500',
   },
 ];
 
@@ -42,20 +38,23 @@ export function DashboardStats() {
       {stats.map((stat, index) => {
         const Icon = stat.icon;
         return (
-          <Card key={index}>
-            <CardContent className="p-6">
+          <Card key={index} className="relative overflow-hidden group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 bg-gradient-to-br from-card/50 to-card backdrop-blur-sm">
+            {/* Gradient overlay */}
+            <div className={`absolute inset-0 bg-gradient-to-br ${stat.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />
+            
+            <CardContent className="p-6 relative">
               <div className="flex justify-between items-start">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground mb-1">
+                  <p className="text-sm font-medium text-muted-foreground mb-2">
                     {stat.title}
                   </p>
-                  <p className="text-2xl font-bold">{stat.value}</p>
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p className="text-3xl font-bold tracking-tight">{stat.value}</p>
+                  <p className="text-sm text-muted-foreground mt-2">
                     {stat.description}
                   </p>
                 </div>
-                <div className={`${stat.iconBg} p-2 rounded-full`}>
-                  <Icon className={`h-5 w-5 ${stat.iconColor}`} />
+                <div className={`bg-gradient-to-br ${stat.gradient} rounded-xl w-12 h-12 flex items-center justify-center shadow-lg`}>
+                  <Icon className="h-6 w-6 text-white" />
                 </div>
               </div>
             </CardContent>
