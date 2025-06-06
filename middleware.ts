@@ -2,6 +2,52 @@ import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
+const ensureUserRecords = async (supabase: any, userId: string, userMetadata: any) => {
+  try {
+    // Check if profile exists
+    const { data: existingProfile } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('id', userId)
+      .single();
+
+    if (!existingProfile) {
+      // Create profile
+      await supabase
+        .from('profiles')
+        .insert({
+          id: userId,
+          full_name: userMetadata?.full_name || userMetadata?.name || 'User',
+          role: 'user'
+        });
+    }
+
+    // Check if user progress exists
+    const { data: existingProgress } = await supabase
+      .from('user_progress')
+      .select('id')
+      .eq('id', userId)
+      .single();
+
+    if (!existingProgress) {
+      // Create user progress record
+      await supabase
+        .from('user_progress')
+        .insert({
+          id: userId,
+          onboarding_complete: false,
+          proposal_status: 'pending',
+          call_booked: false
+        });
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error ensuring user records:', error);
+    return false;
+  }
+};
+
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
   const supabase = createMiddlewareClient({ req, res });
@@ -14,8 +60,11 @@ export async function middleware(req: NextRequest) {
 
   // Auth routes - redirect to appropriate page if already logged in
   if (session && (currentPath === '/login' || currentPath === '/signup')) {
-    // Check user progress to determine where to redirect
     try {
+      // Ensure user records exist
+      await ensureUserRecords(supabase, session.user.id, session.user.user_metadata);
+
+      // Check user progress to determine where to redirect
       const { data: progress } = await supabase
         .from('user_progress')
         .select('*')
@@ -57,6 +106,9 @@ export async function middleware(req: NextRequest) {
     }
 
     try {
+      // Ensure user records exist
+      await ensureUserRecords(supabase, session.user.id, session.user.user_metadata);
+
       const { data: progress } = await supabase
         .from('user_progress')
         .select('*')

@@ -49,10 +49,49 @@ export default function SignupPage() {
     },
   });
 
+  const createUserRecords = async (userId: string, fullName: string) => {
+    try {
+      // Create profile first
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert({
+          id: userId,
+          full_name: fullName,
+          role: 'user'
+        });
+
+      if (profileError) {
+        console.error('Error creating profile:', profileError);
+        throw new Error('Failed to create user profile');
+      }
+
+      // Create user progress record explicitly
+      const { error: progressError } = await supabase
+        .from('user_progress')
+        .insert({
+          id: userId,
+          onboarding_complete: false,
+          proposal_status: 'pending',
+          call_booked: false
+        });
+
+      if (progressError) {
+        console.error('Error creating user progress:', progressError);
+        throw new Error('Failed to create user progress record');
+      }
+
+      console.log('Successfully created profile and progress records for user:', userId);
+    } catch (error) {
+      console.error('Error in createUserRecords:', error);
+      throw error;
+    }
+  };
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     
     try {
+      // First, create the user account
       const { data, error } = await supabase.auth.signUp({
         email: values.email,
         password: values.password,
@@ -66,41 +105,43 @@ export default function SignupPage() {
 
       if (error) throw error;
 
-      // Create profile and user progress records
+      // If user was created successfully, create the associated records
+      if (data.user && !data.user.identities?.length) {
+        // User already exists but email not confirmed
+        toast.info('An account with this email already exists. Please check your email for confirmation instructions.');
+        router.push('/auth/verify-email');
+        return;
+      }
+
       if (data.user) {
-        // Create profile
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert({
-            id: data.user.id,
-            full_name: values.name,
-          });
-
-        if (profileError) {
-          console.error('Error creating profile:', profileError);
-        }
-
-        // Create user progress record explicitly
-        const { error: progressError } = await supabase
-          .from('user_progress')
-          .insert({
-            id: data.user.id,
-            onboarding_complete: false,
-            proposal_status: 'pending',
-            call_booked: false
-          });
-
-        if (progressError) {
-          console.error('Error creating user progress:', progressError);
-          // Don't throw here as the user account was created successfully
+        try {
+          // Create profile and progress records
+          await createUserRecords(data.user.id, values.name);
+          
+          toast.success('Account created successfully! Please check your email to confirm your account.');
+          router.push('/auth/verify-email');
+        } catch (recordError) {
+          console.error('Error creating user records:', recordError);
+          // Even if record creation fails, the user account was created
+          // They can still proceed, and we'll handle missing records in the auth flow
+          toast.success('Account created! Please check your email to confirm your account.');
+          router.push('/auth/verify-email');
         }
       }
-      
-      toast.success('Please check your email to confirm your account.');
-      router.push('/auth/verify-email');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Signup error:', error);
-      toast.error('There was a problem creating your account. Please try again.');
+      
+      let errorMessage = 'There was a problem creating your account. Please try again.';
+      
+      if (error.message?.includes('already registered')) {
+        errorMessage = 'An account with this email already exists. Please try logging in instead.';
+      } else if (error.message?.includes('email')) {
+        errorMessage = 'Please enter a valid email address.';
+      } else if (error.message?.includes('password')) {
+        errorMessage = 'Password must be at least 8 characters long.';
+      }
+      
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
