@@ -86,7 +86,7 @@ export function HowItWorksSection() {
           </motion.div>
         </div>
 
-        <div className="relative max-w-6xl mx-auto">
+        <div className="relative max-w-7xl mx-auto">
           {/* Simple timeline line */}
           <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-px bg-border hidden md:block" />
 
@@ -114,7 +114,7 @@ export function HowItWorksSection() {
                     <div className="grid grid-cols-12 gap-8 items-center">
                       {/* Left side content (for even indices) */}
                       {isLeft && (
-                        <div className="col-span-5">
+                        <div className="col-span-4 col-start-1">
                           <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 hover:bg-card/70 transition-colors duration-300">
                             <div className="flex items-center mb-4">
                               <div className={`bg-gradient-to-br ${step.accent} rounded-xl w-12 h-12 flex items-center justify-center mr-4`}>
@@ -137,7 +137,7 @@ export function HowItWorksSection() {
                       )}
 
                       {/* Center Timeline Circle */}
-                      <div className="col-span-2 flex justify-center">
+                      <div className="col-span-4 flex justify-center">
                         <div className="relative z-10">
                           <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${step.accent} flex items-center justify-center border-4 border-background`}>
                             <step.icon className="h-6 w-6 text-white" />
@@ -145,9 +145,9 @@ export function HowItWorksSection() {
                         </div>
                       </div>
 
-                      {/* Right side content (for odd indices) */}
+                      {/* Right side content (for odd indices) - moved further right */}
                       {!isLeft && (
-                        <div className="col-span-5">
+                        <div className="col-span-4 col-start-9">
                           <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 hover:bg-card/70 transition-colors duration-300">
                             <div className="flex items-center mb-4">
                               <div className={`bg-gradient-to-br ${step.accent} rounded-xl w-12 h-12 flex items-center justify-center mr-4`}>
@@ -168,9 +168,6 @@ export function HowItWorksSection() {
                           </div>
                         </div>
                       )}
-
-                      {/* Empty space for the opposite side */}
-                      {isLeft ? <div className="col-span-5"></div> : <div className="col-span-5"></div>}
                     </div>
                   </div>
 
