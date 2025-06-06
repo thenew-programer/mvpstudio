@@ -24,19 +24,17 @@ export default function Home() {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         
-        // Only redirect if user is authenticated
         if (session) {
-          // User is authenticated, check their progress and redirect
+          // User is authenticated, check their progress
           const redirectPath = await getRedirectPath(session.user.id);
           router.push(redirectPath);
           return;
         }
         
-        // User is not authenticated, show landing page (no redirect)
+        // User is not authenticated, show landing page
         setIsCheckingAuth(false);
       } catch (error) {
         console.error('Error checking authentication:', error);
-        // On error, show landing page
         setIsCheckingAuth(false);
       }
     };
@@ -85,7 +83,7 @@ export default function Home() {
     }
   };
 
-  // Show loading spinner only while checking authentication for authenticated users
+  // Show loading spinner while checking authentication
   if (isCheckingAuth) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -97,7 +95,7 @@ export default function Home() {
     );
   }
 
-  // Show landing page for unauthenticated users or after auth check is complete
+  // Show landing page for unauthenticated users
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
