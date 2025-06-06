@@ -1,15 +1,14 @@
 'use client';
 
 import { useRef } from 'react';
-import { motion, useInView, useScroll, useTransform } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import { 
   Lightbulb, 
   Bot, 
   FileText, 
   Calendar, 
   CreditCard, 
-  Code,
-  ArrowDown
+  Code
 } from 'lucide-react';
 
 const steps = [
@@ -54,44 +53,19 @@ const steps = [
 export function HowItWorksSection() {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"]
-  });
-
-  const pathLength = useTransform(scrollYProgress, [0, 0.8], [0, 1]);
 
   return (
     <section 
       id="how-it-works" 
       ref={ref}
-      className="py-20 md:py-32 relative overflow-hidden"
+      className="py-20 md:py-32 relative overflow-hidden bg-background"
     >
-      {/* Background elements */}
-      <div className="absolute inset-0">
-        <motion.div
-          style={{ 
-            y: useTransform(scrollYProgress, [0, 1], ["0px", "200px"]),
-            rotate: useTransform(scrollYProgress, [0, 1], [0, 45])
-          }}
-          className="absolute top-20 right-20 w-64 h-64 bg-gradient-to-r from-primary/5 to-secondary/5 rounded-full blur-3xl"
-        />
-        <motion.div
-          style={{ 
-            y: useTransform(scrollYProgress, [0, 1], ["50px", "-100px"]),
-            rotate: useTransform(scrollYProgress, [0, 1], [0, -30])
-          }}
-          className="absolute bottom-20 left-20 w-80 h-80 bg-gradient-to-r from-secondary/5 to-primary/5 rounded-full blur-3xl"
-        />
-      </div>
-
       <div className="container relative">
         <div className="text-center max-w-3xl mx-auto mb-20">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-            transition={{ duration: 0.8 }}
-            data-aos="fade-up"
+            transition={{ duration: 0.6 }}
           >
             <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
               How{' '}
@@ -104,9 +78,7 @@ export function HowItWorksSection() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            data-aos="fade-up"
-            data-aos-delay="200"
+            transition={{ duration: 0.6, delay: 0.1 }}
           >
             <p className="text-xl text-muted-foreground leading-relaxed">
               Our streamlined process takes you from idea to MVP in just six simple steps.
@@ -115,207 +87,113 @@ export function HowItWorksSection() {
         </div>
 
         <div className="relative max-w-6xl mx-auto">
-          {/* Animated timeline line */}
-          <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 hidden md:block">
-            <svg className="w-full h-full" viewBox="0 0 2 100" preserveAspectRatio="none">
-              <motion.path
-                d="M1,0 L1,100"
-                stroke="url(#gradient)"
-                strokeWidth="2"
-                fill="none"
-                style={{ pathLength }}
-                initial={{ pathLength: 0 }}
-                animate={isInView ? { pathLength: 1 } : { pathLength: 0 }}
-                transition={{ duration: 2, delay: 0.5 }}
-              />
-              <defs>
-                <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="hsl(var(--primary))" />
-                  <stop offset="100%" stopColor="hsl(var(--secondary))" />
-                </linearGradient>
-              </defs>
-            </svg>
-          </div>
+          {/* Simple timeline line */}
+          <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-px bg-border hidden md:block" />
 
-          {/* Steps */}
-          <div className="space-y-16 md:space-y-24">
+          {/* Steps with clean alternating layout */}
+          <div className="space-y-16 md:space-y-20">
             {steps.map((step, index) => {
               const isLeft = index % 2 === 0;
               
               return (
                 <motion.div
                   key={index}
-                  initial={{ opacity: 0, x: isLeft ? -100 : 100 }}
+                  initial={{ opacity: 0, y: 30 }}
                   animate={isInView ? { 
                     opacity: 1, 
-                    x: 0,
+                    y: 0,
                     transition: {
-                      duration: 0.8,
-                      delay: 0.3 + index * 0.2,
-                      ease: "easeOut"
+                      duration: 0.5,
+                      delay: 0.1 + index * 0.1
                     }
                   } : {}}
                   className="relative"
-                  data-aos={isLeft ? "fade-right" : "fade-left"}
-                  data-aos-delay={index * 150}
                 >
-                  {/* Desktop Layout - Alternating Left/Right */}
+                  {/* Desktop Layout - Clear Left/Right Alternating */}
                   <div className="hidden md:block">
-                    <div className={`grid grid-cols-12 gap-8 items-center ${isLeft ? '' : 'rtl'}`}>
-                      {/* Content Card */}
-                      <div className={`col-span-5 ${isLeft ? '' : 'text-right'}`}>
-                        <motion.div 
-                          className="group relative overflow-hidden bg-gradient-to-br from-card/50 to-card/20 backdrop-blur-xl border border-white/10 rounded-3xl p-8 hover:shadow-2xl transition-all duration-500"
-                          whileHover={{ 
-                            scale: 1.02,
-                            y: -5,
-                            transition: { duration: 0.3 }
-                          }}
-                        >
-                          {/* Gradient overlay */}
-                          <div className={`absolute inset-0 bg-gradient-to-br ${step.accent} opacity-0 group-hover:opacity-5 transition-opacity duration-500 rounded-3xl`} />
-                          
-                          <div className={`flex items-center ${isLeft ? '' : 'justify-end'} mb-6`}>
-                            <motion.div 
-                              className={`${step.accent} bg-gradient-to-br rounded-2xl w-14 h-14 flex items-center justify-center shadow-lg ${isLeft ? 'mr-4' : 'ml-4 order-2'}`}
-                              whileHover={{ rotate: 360 }}
-                              transition={{ duration: 0.6 }}
-                            >
-                              <step.icon className="h-7 w-7 text-white" />
-                            </motion.div>
-                            <div className={isLeft ? '' : 'order-1'}>
-                              <motion.div
-                                className="text-sm font-medium text-primary mb-1"
-                                initial={{ opacity: 0 }}
-                                animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-                                transition={{ delay: 0.7 + index * 0.1 }}
-                              >
-                                Step {index + 1}
-                              </motion.div>
-                              <motion.h3 
-                                className="text-2xl font-bold"
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
-                                transition={{ delay: 0.8 + index * 0.1 }}
-                              >
-                                {step.title}
-                              </motion.h3>
+                    <div className="grid grid-cols-12 gap-8 items-center">
+                      {/* Left side content (for even indices) */}
+                      {isLeft && (
+                        <div className="col-span-5">
+                          <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 hover:bg-card/70 transition-colors duration-300">
+                            <div className="flex items-center mb-4">
+                              <div className={`bg-gradient-to-br ${step.accent} rounded-xl w-12 h-12 flex items-center justify-center mr-4`}>
+                                <step.icon className="h-6 w-6 text-white" />
+                              </div>
+                              <div>
+                                <div className="text-sm font-medium text-primary mb-1">
+                                  Step {index + 1}
+                                </div>
+                                <h3 className="text-xl font-bold">
+                                  {step.title}
+                                </h3>
+                              </div>
                             </div>
+                            <p className="text-muted-foreground leading-relaxed">
+                              {step.description}
+                            </p>
                           </div>
-                          
-                          <motion.p 
-                            className="text-muted-foreground leading-relaxed text-lg"
-                            initial={{ opacity: 0 }}
-                            animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-                            transition={{ delay: 0.9 + index * 0.1 }}
-                          >
-                            {step.description}
-                          </motion.p>
-                        </motion.div>
-                      </div>
+                        </div>
+                      )}
 
                       {/* Center Timeline Circle */}
                       <div className="col-span-2 flex justify-center">
-                        <motion.div 
-                          className="relative z-10"
-                          initial={{ scale: 0, rotate: -180 }}
-                          animate={isInView ? { 
-                            scale: 1, 
-                            rotate: 0,
-                            transition: {
-                              duration: 0.6,
-                              delay: 0.5 + index * 0.2,
-                              type: "spring",
-                              stiffness: 200
-                            }
-                          } : {}}
-                        >
-                          <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${step.accent} flex items-center justify-center shadow-2xl border-4 border-background`}>
-                            <step.icon className="h-8 w-8 text-white" />
+                        <div className="relative z-10">
+                          <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${step.accent} flex items-center justify-center border-4 border-background`}>
+                            <step.icon className="h-6 w-6 text-white" />
                           </div>
-                          
-                          {/* Pulse effect */}
-                          <motion.div
-                            className={`absolute inset-0 rounded-full bg-gradient-to-br ${step.accent}`}
-                            animate={{ 
-                              scale: [1, 1.5, 1],
-                              opacity: [0.5, 0, 0.5]
-                            }}
-                            transition={{ 
-                              duration: 2,
-                              repeat: Infinity,
-                              delay: index * 0.3
-                            }}
-                          />
-                        </motion.div>
+                        </div>
                       </div>
 
-                      {/* Empty space for alternating layout */}
-                      <div className="col-span-5"></div>
+                      {/* Right side content (for odd indices) */}
+                      {!isLeft && (
+                        <div className="col-span-5">
+                          <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 hover:bg-card/70 transition-colors duration-300">
+                            <div className="flex items-center mb-4">
+                              <div className={`bg-gradient-to-br ${step.accent} rounded-xl w-12 h-12 flex items-center justify-center mr-4`}>
+                                <step.icon className="h-6 w-6 text-white" />
+                              </div>
+                              <div>
+                                <div className="text-sm font-medium text-primary mb-1">
+                                  Step {index + 1}
+                                </div>
+                                <h3 className="text-xl font-bold">
+                                  {step.title}
+                                </h3>
+                              </div>
+                            </div>
+                            <p className="text-muted-foreground leading-relaxed">
+                              {step.description}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Empty space for the opposite side */}
+                      {isLeft ? <div className="col-span-5"></div> : <div className="col-span-5"></div>}
                     </div>
                   </div>
 
                   {/* Mobile Layout - Stacked */}
                   <div className="block md:hidden">
-                    <motion.div 
-                      className="group relative overflow-hidden bg-gradient-to-br from-card/50 to-card/20 backdrop-blur-xl border border-white/10 rounded-3xl p-8 hover:shadow-2xl transition-all duration-500"
-                      whileHover={{ 
-                        scale: 1.02,
-                        y: -5,
-                        transition: { duration: 0.3 }
-                      }}
-                    >
-                      {/* Gradient overlay */}
-                      <div className={`absolute inset-0 bg-gradient-to-br ${step.accent} opacity-0 group-hover:opacity-5 transition-opacity duration-500 rounded-3xl`} />
-                      
-                      <div className="flex items-center mb-6">
-                        <motion.div 
-                          className={`${step.accent} bg-gradient-to-br rounded-2xl w-14 h-14 flex items-center justify-center mr-4 shadow-lg`}
-                          whileHover={{ rotate: 360 }}
-                          transition={{ duration: 0.6 }}
-                        >
-                          <step.icon className="h-7 w-7 text-white" />
-                        </motion.div>
+                    <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 hover:bg-card/70 transition-colors duration-300">
+                      <div className="flex items-center mb-4">
+                        <div className={`bg-gradient-to-br ${step.accent} rounded-xl w-12 h-12 flex items-center justify-center mr-4`}>
+                          <step.icon className="h-6 w-6 text-white" />
+                        </div>
                         <div>
-                          <motion.div
-                            className="text-sm font-medium text-primary mb-1"
-                            initial={{ opacity: 0 }}
-                            animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-                            transition={{ delay: 0.7 + index * 0.1 }}
-                          >
+                          <div className="text-sm font-medium text-primary mb-1">
                             Step {index + 1}
-                          </motion.div>
-                          <motion.h3 
-                            className="text-2xl font-bold"
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
-                            transition={{ delay: 0.8 + index * 0.1 }}
-                          >
+                          </div>
+                          <h3 className="text-xl font-bold">
                             {step.title}
-                          </motion.h3>
+                          </h3>
                         </div>
                       </div>
-                      
-                      <motion.p 
-                        className="text-muted-foreground leading-relaxed text-lg"
-                        initial={{ opacity: 0 }}
-                        animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-                        transition={{ delay: 0.9 + index * 0.1 }}
-                      >
+                      <p className="text-muted-foreground leading-relaxed">
                         {step.description}
-                      </motion.p>
-
-                      {/* Arrow for next step */}
-                      {index < steps.length - 1 && (
-                        <motion.div
-                          className="absolute -bottom-8 left-1/2 transform -translate-x-1/2"
-                          animate={{ y: [0, 10, 0] }}
-                          transition={{ duration: 2, repeat: Infinity }}
-                        >
-                          <ArrowDown className="h-6 w-6 text-primary/50" />
-                        </motion.div>
-                      )}
-                    </motion.div>
+                      </p>
+                    </div>
                   </div>
                 </motion.div>
               );
