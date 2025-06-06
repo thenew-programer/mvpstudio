@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 
 interface UseIntersectionObserverProps {
   threshold?: number;
@@ -13,7 +13,7 @@ export function useIntersectionObserver({
   rootMargin = '0%',
   freezeOnceVisible = false,
 }: UseIntersectionObserverProps = {}): [
-  (node?: Element | null) => void,
+  (node?: Element | null | undefined) => void,
   boolean,
   IntersectionObserverEntry | undefined,
 ] {
@@ -74,5 +74,10 @@ export function useIntersectionObserver({
     }
   });
 
-  return [setNode, !!entry?.isIntersecting, entry];
+  // Create a callback function that matches the expected signature
+  const setNodeCallback = useCallback((node?: Element | null | undefined) => {
+    setNode(node || null);
+  }, []);
+
+  return [setNodeCallback, !!entry?.isIntersecting, entry];
 }
