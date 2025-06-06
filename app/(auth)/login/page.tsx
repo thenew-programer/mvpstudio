@@ -50,31 +50,36 @@ export default function LoginPage() {
   const getRedirectPath = async (userId: string) => {
     try {
       // Check user progress to determine where to redirect
-      const { data: progress } = await supabase
+      const { data: progress, error } = await supabase
         .from('user_progress')
         .select('*')
         .eq('id', userId)
         .single();
 
-      // If no progress record exists, start with onboarding
-      if (!progress) {
+      // If no progress record exists or error fetching, start with onboarding
+      if (error || !progress) {
+        console.log('No progress found, redirecting to onboarding');
         return '/onboarding';
       }
 
       // Check each step in order
       if (!progress.onboarding_complete) {
+        console.log('Onboarding not complete, redirecting to onboarding');
         return '/onboarding';
       }
 
       if (progress.proposal_status === 'pending') {
+        console.log('Proposal pending, redirecting to proposal');
         return '/proposal';
       }
 
       if (progress.proposal_status === 'accepted' && !progress.call_booked) {
+        console.log('Proposal accepted but call not booked, redirecting to book-call');
         return '/book-call';
       }
 
       // If all steps are complete, go to dashboard
+      console.log('All steps complete, redirecting to dashboard');
       return '/dashboard';
     } catch (error) {
       console.error('Error checking user progress:', error);
@@ -109,6 +114,7 @@ export default function LoginPage() {
         if (!data.user.email_confirmed_at) {
           toast.error('Please confirm your email address before logging in.');
           router.push('/auth/verify-email');
+          setIsLoading(false);
           return;
         }
 
