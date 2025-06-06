@@ -1,9 +1,199 @@
-For all designs I ask you to make, have them be beautiful, not cookie cutter. Make webpages that are fully featured and worthy for production.
+# Freelance MVP Platform - Bolt.new Project Prompt
 
-When using client-side hooks (useState and useEffect) in a component that's being treated as a Server Component by Next.js, always add the "use client" directive at the top of the file.
+## PROJECT OVERVIEW
+Build a professional freelance platform for SaaS MVP development services with AI-powered proposal generation, client management, and project tracking.
 
-Do not write code that will trigger this error: "Warning: Extra attributes from the server: %s%s""class,style"
+## CORE RULES & STANDARDS
 
-By default, this template supports JSX syntax with Tailwind CSS classes, the shadcn/ui library, React hooks, and Lucide React for icons. Do not install other packages for UI themes, icons, etc unless absolutely necessary or I request them.
+### Design Standards
+- **Beautiful, production-ready designs** - No cookie-cutter templates
+- **Minimal aesthetic** - Primary colors: black, white, with 1-2 accent colors for highlights
+- **Professional appearance** - Clean, modern, trustworthy design
+- **Fully responsive** - Mobile-first approach
+- **Accessible** - Proper contrast, semantic HTML, keyboard navigation
 
-Use icons from lucide-react for logos.
+### Technical Standards
+- **Next.js 14+ with App Router** - Use server components by default
+- **"use client" directive** - Add to any component using useState, useEffect, or browser APIs
+- **No hydration errors** - Avoid server/client markup mismatches
+- **TypeScript** - Strict typing throughout
+- **Tailwind CSS** - Utility-first styling
+- **shadcn/ui components** - Consistent UI library
+- **Lucide React icons** - For all iconography
+
+### Code Quality
+- **Clean architecture** - Separate concerns, reusable components
+- **Error handling** - Proper try/catch, loading states, error boundaries
+- **Performance** - Optimized images, lazy loading, efficient queries
+- **Security** - Input validation, sanitization, secure auth flows
+- **SEO optimized** - Meta tags, structured data, sitemap
+
+## TECH STACK
+- **Frontend**: Next.js 14, TypeScript, Tailwind CSS, shadcn/ui
+- **Backend**: Supabase (Auth, Database, Storage, Edge Functions)
+- **Payments**: Stripe integration
+- **AI**: OpenAI API for proposal generation
+- **Deployment**: Docker containerization
+- **Auth**: Supabase Auth with social providers (Google, GitHub)
+
+## REQUIRED FEATURES
+
+### Authentication System
+- Sign up / Sign in pages with email/password
+- Social login (Google, GitHub)
+- Email verification with popup blocking access
+- Password reset flow
+- Protected routes middleware
+
+### Core Pages
+1. **Landing Page**
+   - Hero section with value proposition
+   - Portfolio showcase
+   - Testimonials section
+   - Pricing tiers
+   - Contact form
+
+2. **User Dashboard**
+   - Project overview
+   - Active proposals
+   - Profile management
+   - Settings
+
+3. **Admin Dashboard**
+   - Client management
+   - Project tracking
+   - Analytics
+   - Payment history
+
+4. **Proposal Generation**
+   - AI-powered form
+   - Voice recording capability
+   - Generated output with:
+     - MVP Summary
+     - Suggested Tech Stack
+     - Features list
+     - Estimated Timeline and Cost
+
+### Additional Features
+- Light/Dark mode toggle
+- Stripe payment integration
+- Account settings
+- Profile management
+- Email notifications
+- Mobile responsive design
+
+## DATABASE SCHEMA (Supabase)
+
+### Users Table
+```sql
+users (
+  id UUID PRIMARY KEY,
+  email TEXT UNIQUE,
+  full_name TEXT,
+  avatar_url TEXT,
+  role TEXT DEFAULT 'client',
+  created_at TIMESTAMP,
+  updated_at TIMESTAMP
+)
+```
+
+### Proposals Table
+```sql
+proposals (
+  id UUID PRIMARY KEY,
+  user_id UUID REFERENCES users(id),
+  title TEXT,
+  description TEXT,
+  voice_recording_url TEXT,
+  ai_generated_content JSONB,
+  status TEXT DEFAULT 'draft',
+  created_at TIMESTAMP,
+  updated_at TIMESTAMP
+)
+```
+
+### Projects Table
+```sql
+projects (
+  id UUID PRIMARY KEY,
+  proposal_id UUID REFERENCES proposals(id),
+  client_id UUID REFERENCES users(id),
+  title TEXT,
+  status TEXT DEFAULT 'pending',
+  timeline_weeks INTEGER,
+  cost_estimate DECIMAL,
+  created_at TIMESTAMP,
+  updated_at TIMESTAMP
+)
+```
+
+## IMPLEMENTATION PHASES
+
+### Phase 1: Foundation
+1. Set up Next.js project with TypeScript
+2. Configure Tailwind CSS and shadcn/ui
+3. Set up Supabase connection
+4. Implement authentication system
+5. Create basic layout and navigation
+
+### Phase 2: Core Features
+1. Build landing page
+2. Create user dashboard
+3. Implement proposal generation
+4. Add AI integration for proposals
+5. Set up email verification flow
+
+### Phase 3: Advanced Features
+1. Admin dashboard
+2. Stripe payment integration
+3. Voice recording functionality
+4. Light/dark mode
+5. Mobile optimization
+
+### Phase 4: Polish
+1. Error handling and loading states
+2. Performance optimization
+3. SEO implementation
+4. Testing and debugging
+5. Docker deployment setup
+
+## SPECIFIC REQUIREMENTS
+
+### Email Verification Flow
+- Show popup immediately after signup
+- Block all app functionality until verified
+- Provide resend verification option
+- Clear success/error messaging
+
+### AI Proposal Generation
+- Structured input form for project details
+- Voice recording with transcription
+- AI processing to generate:
+  - Technical recommendations
+  - Feature breakdown
+  - Timeline estimation
+  - Cost calculation
+- Editable output before sending to client
+
+### Design Guidelines
+- Use Inter or similar professional font
+- Consistent spacing (4, 8, 16, 24, 32px scale)
+- Subtle shadows and borders
+- Smooth transitions and hover effects
+- Loading skeletons for better UX
+
+### Security Considerations
+- Input validation on all forms
+- SQL injection prevention
+- XSS protection
+- Secure file uploads
+- Rate limiting on AI endpoints
+
+## DEPLOYMENT
+- Docker containerization
+- Environment variables management
+- CI/CD pipeline setup
+- Production database configuration
+- SSL certificate setup
+
+Remember: Focus on building a professional, production-ready application that showcases advanced development skills while solving real business problems for freelance MVP developers.
