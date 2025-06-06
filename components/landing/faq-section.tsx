@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { motion, useInView, useScroll, useTransform } from 'framer-motion';
 import {
   Accordion,
   AccordionContent,
@@ -39,56 +39,90 @@ const faqs = [
 export function FAQSection() {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"]
+  });
+
+  const y = useTransform(scrollYProgress, [0, 1], ["50px", "-50px"]);
 
   return (
     <section 
       id="faq" 
       ref={ref}
-      className="py-20 md:py-32"
+      className="py-20 md:py-32 relative overflow-hidden"
     >
-      <div className="container">
+      {/* Background elements */}
+      <motion.div
+        style={{ y }}
+        className="absolute top-20 left-20 w-80 h-80 bg-gradient-to-r from-primary/5 to-secondary/5 rounded-full blur-3xl"
+      />
+
+      <div className="container relative">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-            transition={{ duration: 0.5 }}
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+            transition={{ duration: 0.8 }}
+            data-aos="fade-up"
           >
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
-              Frequently Asked Questions
+            <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
+              Frequently Asked{' '}
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                Questions
+              </span>
             </h2>
           </motion.div>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            data-aos="fade-up"
+            data-aos-delay="200"
           >
-            <p className="text-xl text-muted-foreground">
+            <p className="text-xl text-muted-foreground leading-relaxed">
               Find answers to common questions about our platform and process.
             </p>
           </motion.div>
         </div>
 
-        <div className="max-w-3xl mx-auto">
-          <Accordion type="single" collapsible className="w-full">
+        <motion.div 
+          className="max-w-3xl mx-auto"
+          initial={{ opacity: 0, y: 50 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+        >
+          <Accordion type="single" collapsible className="w-full space-y-4">
             {faqs.map((faq, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, y: 10 }}
-                animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
-                transition={{ duration: 0.3, delay: 0.2 + index * 0.1 }}
+                initial={{ opacity: 0, x: -30 }}
+                animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -30 }}
+                transition={{ duration: 0.6, delay: 0.5 + index * 0.1 }}
+                data-aos="fade-right"
+                data-aos-delay={index * 100}
               >
-                <AccordionItem value={`item-${index}`}>
-                  <AccordionTrigger className="text-left">
-                    {faq.question}
+                <AccordionItem 
+                  value={`item-${index}`}
+                  className="bg-gradient-to-br from-card/50 to-card/20 backdrop-blur-xl border border-white/10 rounded-2xl px-6 py-2 hover:shadow-lg transition-all duration-300"
+                >
+                  <AccordionTrigger className="text-left hover:no-underline py-6">
+                    <motion.span
+                      className="text-lg font-semibold"
+                      whileHover={{ x: 5 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      {faq.question}
+                    </motion.span>
                   </AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground">
+                  <AccordionContent className="text-muted-foreground leading-relaxed pb-6 text-base">
                     {faq.answer}
                   </AccordionContent>
                 </AccordionItem>
               </motion.div>
             ))}
           </Accordion>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

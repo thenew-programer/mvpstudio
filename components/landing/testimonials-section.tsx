@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { motion, useInView, useScroll, useTransform } from 'framer-motion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
 import { Quote, Star } from 'lucide-react';
@@ -44,30 +44,52 @@ const testimonials = [
 export function TestimonialsSection() {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"]
+  });
+
+  const y = useTransform(scrollYProgress, [0, 1], ["50px", "-50px"]);
 
   return (
     <section 
       id="testimonials" 
       ref={ref}
-      className="py-20 md:py-32"
+      className="py-20 md:py-32 relative overflow-hidden"
     >
-      <div className="container">
-        <div className="text-center max-w-3xl mx-auto mb-16">
+      {/* Background elements */}
+      <motion.div
+        style={{ y }}
+        className="absolute top-10 left-10 w-80 h-80 bg-gradient-to-r from-primary/5 to-secondary/5 rounded-full blur-3xl"
+      />
+      <motion.div
+        style={{ y: useTransform(scrollYProgress, [0, 1], ["-30px", "100px"]) }}
+        className="absolute bottom-10 right-10 w-96 h-96 bg-gradient-to-r from-secondary/5 to-primary/5 rounded-full blur-3xl"
+      />
+
+      <div className="container relative">
+        <div className="text-center max-w-3xl mx-auto mb-20">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-            transition={{ duration: 0.5 }}
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+            transition={{ duration: 0.8 }}
+            data-aos="fade-up"
           >
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
-              Success Stories
+            <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
+              Success{' '}
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                Stories
+              </span>
             </h2>
           </motion.div>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            data-aos="fade-up"
+            data-aos-delay="200"
           >
-            <p className="text-xl text-muted-foreground">
+            <p className="text-xl text-muted-foreground leading-relaxed">
               Hear from founders who transformed their ideas into successful MVPs with our platform.
             </p>
           </motion.div>
@@ -77,46 +99,140 @@ export function TestimonialsSection() {
           {testimonials.map((testimonial, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 30 }}
-              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-              transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
+              initial={{ opacity: 0, y: 50, rotateX: -10 }}
+              animate={isInView ? { 
+                opacity: 1, 
+                y: 0, 
+                rotateX: 0,
+                transition: {
+                  duration: 0.8,
+                  delay: 0.3 + index * 0.2,
+                  ease: "easeOut"
+                }
+              } : {}}
+              whileHover={{ 
+                y: -10,
+                scale: 1.02,
+                rotateY: 2,
+                transition: { duration: 0.3 }
+              }}
               className="group"
+              data-aos="flip-left"
+              data-aos-delay={index * 150}
             >
-              <Card className="h-full relative overflow-hidden bg-gradient-to-br from-card/50 to-card border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 backdrop-blur-sm">
+              <Card className="h-full relative overflow-hidden bg-gradient-to-br from-card/50 to-card/20 backdrop-blur-xl border border-white/10 shadow-xl hover:shadow-2xl transition-all duration-500">
                 {/* Gradient overlay */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${testimonial.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />
+                <motion.div 
+                  className={`absolute inset-0 bg-gradient-to-br ${testimonial.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}
+                  initial={false}
+                  whileHover={{ opacity: 0.05 }}
+                />
                 
                 <CardContent className="p-8 relative">
-                  {/* Quote icon with gradient */}
-                  <div className={`bg-gradient-to-br ${testimonial.gradient} rounded-xl w-12 h-12 flex items-center justify-center mb-6 shadow-lg`}>
-                    <Quote className="h-6 w-6 text-white" />
-                  </div>
+                  {/* Quote icon with gradient and animation */}
+                  <motion.div 
+                    className={`bg-gradient-to-br ${testimonial.gradient} rounded-2xl w-14 h-14 flex items-center justify-center mb-6 shadow-lg`}
+                    whileHover={{ 
+                      rotate: [0, -10, 10, 0],
+                      scale: 1.1,
+                      transition: { duration: 0.5 }
+                    }}
+                  >
+                    <Quote className="h-7 w-7 text-white" />
+                    
+                    {/* Pulse effect */}
+                    <motion.div
+                      className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${testimonial.gradient}`}
+                      animate={{ 
+                        scale: [1, 1.3, 1],
+                        opacity: [0.5, 0, 0.5]
+                      }}
+                      transition={{ 
+                        duration: 3,
+                        repeat: Infinity,
+                        delay: index * 0.5
+                      }}
+                    />
+                  </motion.div>
                   
-                  {/* Star rating */}
-                  <div className="flex items-center mb-4">
+                  {/* Animated star rating */}
+                  <motion.div 
+                    className="flex items-center mb-6"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
+                    transition={{ delay: 0.5 + index * 0.1 }}
+                  >
                     {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, scale: 0 }}
+                        animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0 }}
+                        transition={{ 
+                          delay: 0.6 + index * 0.1 + i * 0.1,
+                          type: "spring",
+                          stiffness: 200
+                        }}
+                      >
+                        <Star className="h-5 w-5 fill-amber-400 text-amber-400 mr-1" />
+                      </motion.div>
                     ))}
-                  </div>
+                  </motion.div>
                   
-                  <p className="mb-8 text-muted-foreground leading-relaxed text-lg">
+                  <motion.p 
+                    className="mb-8 text-muted-foreground leading-relaxed text-lg"
+                    initial={{ opacity: 0 }}
+                    animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+                    transition={{ delay: 0.7 + index * 0.1 }}
+                  >
                     "{testimonial.quote}"
-                  </p>
+                  </motion.p>
                   
-                  <div className="flex items-center">
-                    <div className={`bg-gradient-to-br ${testimonial.gradient} rounded-full p-0.5 mr-4`}>
-                      <Avatar className="h-12 w-12 border-2 border-background">
-                        <AvatarFallback className="bg-background text-foreground font-semibold">
+                  <motion.div 
+                    className="flex items-center"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                    transition={{ delay: 0.8 + index * 0.1 }}
+                  >
+                    <motion.div 
+                      className={`bg-gradient-to-br ${testimonial.gradient} rounded-full p-0.5 mr-4`}
+                      whileHover={{ scale: 1.1 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <Avatar className="h-14 w-14 border-2 border-background">
+                        <AvatarFallback className="bg-background text-foreground font-semibold text-lg">
                           {testimonial.avatar}
                         </AvatarFallback>
                       </Avatar>
-                    </div>
+                    </motion.div>
                     <div>
                       <p className="font-semibold text-lg">{testimonial.author}</p>
                       <p className="text-muted-foreground">{testimonial.role}</p>
                     </div>
-                  </div>
+                  </motion.div>
                 </CardContent>
+
+                {/* Floating particles */}
+                <div className="absolute inset-0 overflow-hidden">
+                  {[...Array(3)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      className={`absolute w-1 h-1 bg-gradient-to-r ${testimonial.gradient} rounded-full opacity-0 group-hover:opacity-60`}
+                      style={{
+                        left: `${20 + i * 25}%`,
+                        top: `${20 + i * 30}%`,
+                      }}
+                      animate={{
+                        y: [0, -30, 0],
+                        opacity: [0, 0.6, 0],
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        delay: i * 0.7,
+                      }}
+                    />
+                  ))}
+                </div>
               </Card>
             </motion.div>
           ))}
