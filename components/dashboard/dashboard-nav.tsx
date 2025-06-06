@@ -53,13 +53,12 @@ export function DashboardNav() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
 
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', session.user.id)
-        .single();
+      // Use RPC to call the secure admin check function
+      const { data: isAdmin } = await supabase.rpc('check_is_admin', {
+        user_id: session.user.id
+      });
 
-      if (profile?.role === 'admin') {
+      if (isAdmin) {
         setIsAdmin(true);
         setNavItems([...baseNavItems, adminNavItem]);
       }

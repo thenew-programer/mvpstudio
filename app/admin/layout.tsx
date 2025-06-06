@@ -20,23 +20,17 @@ export default function AdminLayout({
         const { data: { session } } = await supabase.auth.getSession();
         
         if (!session) {
-          router.push('/login');
-          return;
-        }
-
-        const { data: profile, error } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', session.user.id)
-          .single();
-
-        if (error) {
-          console.error('Error checking admin status:', error);
           router.push('/dashboard');
           return;
         }
 
-        if (!profile || profile.role !== 'admin') {
+        // Use RPC to call the secure admin check function
+        const { data: isAdmin, error } = await supabase.rpc('check_is_admin', {
+          user_id: session.user.id
+        });
+
+        if (error || !isAdmin) {
+          console.error('Access denied:', error);
           router.push('/dashboard');
           return;
         }
