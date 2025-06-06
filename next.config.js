@@ -13,12 +13,6 @@ const nextConfig = {
     ];
     return config;
   },
-  // Exclude Supabase functions from the build
-  experimental: {
-    outputFileTracingExcludes: {
-      '*': ['./supabase/functions/**/*'],
-    },
-  },
 };
 
 module.exports = nextConfig;

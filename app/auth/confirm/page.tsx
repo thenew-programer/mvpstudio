@@ -30,6 +30,7 @@ function ConfirmContent() {
       try {
         const token_hash = searchParams.get('token_hash');
         const type = searchParams.get('type');
+        const next = searchParams.get('next') ?? '/dashboard';
 
         if (token_hash && type) {
           const { error } = await supabase.auth.verifyOtp({
@@ -42,8 +43,8 @@ function ConfirmContent() {
             setMessage('There was a problem confirming your email. Please try signing up again.');
           } else {
             setStatus('success');
-            setMessage('Email confirmed successfully! Redirecting to onboarding...');
-            setTimeout(() => router.push('/onboarding'), 2000);
+            setMessage('Email confirmed successfully! Redirecting...');
+            setTimeout(() => router.push(next), 2000);
           }
         } else {
           setStatus('error');
@@ -59,7 +60,7 @@ function ConfirmContent() {
   }, [router, searchParams]);
 
   return (
-    <Card className="w-full max-w-md bg-gradient-to-br from-card/80 to-card border-0 shadow-2xl backdrop-blur-sm">
+    <Card className="w-full max-w-md">
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl">Email Confirmation</CardTitle>
         <CardDescription>Verifying your email address</CardDescription>
@@ -95,7 +96,7 @@ function ConfirmContent() {
 
 export default function ConfirmPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-background to-muted/20">
+    <div className="min-h-screen flex items-center justify-center p-4">
       <Suspense fallback={<LoadingCard />}>
         <ConfirmContent />
       </Suspense>

@@ -20,22 +20,10 @@ export function SocialAuthButtons() {
         },
       });
 
-      if (error) {
-        console.error('Social login error:', error);
-        throw error;
-      }
-    } catch (error: any) {
+      if (error) throw error;
+    } catch (error) {
       console.error('Social login error:', error);
-      
-      let errorMessage = 'There was a problem with social login. Please try again.';
-      
-      if (error.message?.includes('popup')) {
-        errorMessage = 'Popup was blocked. Please allow popups and try again.';
-      } else if (error.message?.includes('network')) {
-        errorMessage = 'Network error. Please check your connection and try again.';
-      }
-      
-      toast.error(errorMessage);
+      toast.error('There was a problem with social login. Please try again.');
     } finally {
       setIsLoading(null);
     }

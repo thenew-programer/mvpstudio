@@ -53,9 +53,6 @@ export default function SignupPage() {
     setIsLoading(true);
     
     try {
-      console.log('Starting signup process for:', values.email);
-      
-      // First, try to sign up the user with email confirmation disabled for testing
       const { data, error } = await supabase.auth.signUp({
         email: values.email,
         password: values.password,
@@ -63,138 +60,30 @@ export default function SignupPage() {
           data: {
             full_name: values.name,
           },
-          // For development, disable email confirmation
-          emailRedirectTo: `${window.location.origin}/auth/confirm`,
         },
       });
 
-      console.log('Signup response:', { data, error });
+      if (error) throw error;
+      
+      // Create profile
+      if (data.user) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert({
+            id: data.user.id,
+            full_name: values.name,
+          });
 
-      if (error) {
-        console.error('Signup error:', error);
-        
-        // Handle specific error cases
-        if (error.message.includes('already registered') || error.message.includes('already been registered')) {
-          toast.error('An account with this email already exists. Please try logging in instead.');
-          return;
+        if (profileError) {
+          console.error('Error creating profile:', profileError);
         }
-        
-        if (error.message.includes('email')) {
-          toast.error('Please enter a valid email address.');
-          return;
-        }
-        
-        if (error.message.includes('password')) {
-          toast.error('Password must be at least 8 characters long.');
-          return;
-        }
-        
-        if (error.message.includes('weak password')) {
-          toast.error('Password is too weak. Please choose a stronger password.');
-          return;
-        }
-        
-        if (error.message.includes('rate limit')) {
-          toast.error('Too many signup attempts. Please wait a moment and try again.');
-          return;
-        }
-        
-        // Generic error fallback
-        toast.error('There was a problem creating your account. Please try again.');
-        return;
-      }
-
-      // Check if user was created successfully
-      if (!data.user) {
-        console.error('No user data returned from signup');
-        toast.error('Account creation failed. Please try again.');
-        return;
-      }
-
-      console.log('User created successfully:', data.user.id);
-
-      // Check if user already exists but email not confirmed
-      if (data.user && !data.user.identities?.length) {
-        console.log('User already exists but email not confirmed');
-        toast.info('An account with this email already exists. Please check your email for confirmation instructions.');
-        router.push('/auth/verify-email');
-        return;
-      }
-
-      // If we have a session immediately (email confirmation disabled), create records
-      if (data.session) {
-        console.log('User has immediate session, creating records...');
-        
-        try {
-          // Use the service role client to bypass RLS for initial setup
-          const { error: profileError } = await supabase
-            .from('profiles')
-            .upsert({
-              id: data.user.id,
-              full_name: values.name,
-              role: 'user'
-            }, {
-              onConflict: 'id'
-            });
-
-          if (profileError) {
-            console.error('Error creating profile:', profileError);
-            // Don't fail the signup if profile creation fails
-          }
-
-          // Create user progress
-          const { error: progressError } = await supabase
-            .from('user_progress')
-            .upsert({
-              id: data.user.id,
-              onboarding_complete: false,
-              proposal_status: 'pending',
-              call_booked: false
-            }, {
-              onConflict: 'id'
-            });
-
-          if (progressError) {
-            console.error('Error creating user progress:', progressError);
-            // Don't fail the signup if progress creation fails
-          }
-
-          console.log('User records created successfully');
-          toast.success('Account created successfully! Welcome to MVPForge.');
-          router.push('/onboarding');
-        } catch (recordError) {
-          console.error('Error creating user records:', recordError);
-          // Even if record creation fails, the user is created, so continue
-          toast.success('Account created successfully! Please complete your profile.');
-          router.push('/onboarding');
-        }
-      } else {
-        // Email confirmation required
-        console.log('Email confirmation required');
-        toast.success('Account created successfully! Please check your email to confirm your account.');
-        router.push('/auth/verify-email');
       }
       
-    } catch (error: any) {
+      toast.success('Account created successfully! Redirecting to onboarding...');
+      router.push('/onboarding');
+    } catch (error) {
       console.error('Signup error:', error);
-      
-      let errorMessage = 'There was a problem creating your account. Please try again.';
-      
-      if (error.message?.includes('already registered') || error.message?.includes('already been registered')) {
-        errorMessage = 'An account with this email already exists. Please try logging in instead.';
-      } else if (error.message?.includes('email')) {
-        errorMessage = 'Please enter a valid email address.';
-      } else if (error.message?.includes('password')) {
-        errorMessage = 'Password must be at least 8 characters long.';
-      } else if (error.message?.includes('weak password')) {
-        errorMessage = 'Password is too weak. Please choose a stronger password.';
-      } else if (error.message?.includes('rate limit')) {
-        errorMessage = 'Too many signup attempts. Please wait a moment and try again.';
-      } else if (error.message?.includes('duplicate') || error.message?.includes('unique')) {
-        errorMessage = 'An account with this email already exists. Please try logging in instead.';
-      }
-      
-      toast.error(errorMessage);
+      toast.error('There was a problem creating your account. Please try again.');
     } finally {
       setIsLoading(false);
     }
