@@ -60,11 +60,12 @@ export default function SignupPage() {
           data: {
             full_name: values.name,
           },
+          emailRedirectTo: `${window.location.origin}/auth/confirm`,
         },
       });
 
       if (error) throw error;
-      
+
       // Create profile
       if (data.user) {
         const { error: profileError } = await supabase
@@ -79,8 +80,8 @@ export default function SignupPage() {
         }
       }
       
-      toast.success('Account created successfully! Redirecting to onboarding...');
-      router.push('/onboarding');
+      toast.success('Please check your email to confirm your account.');
+      router.push('/auth/verify-email');
     } catch (error) {
       console.error('Signup error:', error);
       toast.error('There was a problem creating your account. Please try again.');

@@ -23,8 +23,13 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL('/login', req.url));
   }
 
-  // Check user progress for flow redirects
+  // Check if email is confirmed for authenticated users
   if (session && isProtectedRoute) {
+    // Check if email is confirmed
+    if (!session.user.email_confirmed_at) {
+      return NextResponse.redirect(new URL('/auth/verify-email', req.url));
+    }
+
     try {
       const { data: progress } = await supabase
         .from('user_progress')
