@@ -147,20 +147,22 @@ export function HowItWorksSection() {
 
                       {/* Right side content (for odd indices) - moved further right */}
                       {!isLeft && (
-                        <div className="col-span-4 col-start-9">
+                        <div className="col-span-4 col-start-9 relative">
+                          {/* Icon positioned on top of the timeline */}
+                          <div className="absolute -left-20 top-8 z-20">
+                            <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${step.accent} flex items-center justify-center border-4 border-background shadow-lg`}>
+                              <step.icon className="h-6 w-6 text-white" />
+                            </div>
+                          </div>
+                          
                           <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 hover:bg-card/70 transition-colors duration-300">
-                            <div className="flex items-center mb-4">
-                              <div className={`bg-gradient-to-br ${step.accent} rounded-xl w-12 h-12 flex items-center justify-center mr-4`}>
-                                <step.icon className="h-6 w-6 text-white" />
+                            <div className="mb-4">
+                              <div className="text-sm font-medium text-primary mb-1">
+                                Step {index + 1}
                               </div>
-                              <div>
-                                <div className="text-sm font-medium text-primary mb-1">
-                                  Step {index + 1}
-                                </div>
-                                <h3 className="text-xl font-bold">
-                                  {step.title}
-                                </h3>
-                              </div>
+                              <h3 className="text-xl font-bold">
+                                {step.title}
+                              </h3>
                             </div>
                             <p className="text-muted-foreground leading-relaxed">
                               {step.description}
